@@ -42,6 +42,12 @@ void Bootloader::loadConfigBootloader(const string &file)
     OUTPUT_LOGS_DIR = configs["OUTPUT_LOGS_DIR"];
     QUANTUM_PROCESS_MIN = stoi(configs["QUANTUM_PROCESS_MIN"]);
     QUANTUM_PROCESS_MAX = stoi(configs["QUANTUM_PROCESS_MAX"]);
+
+    if (NUM_NUCLEOS <= 0 || QUANTUM_PROCESS_MIN <= 0 || QUANTUM_PROCESS_MAX <= 0)
+    {
+        cerr << "Configuração inválida: valores numéricos devem ser maiores que zero." << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 void Bootloader::garantirDiretorioSaidaExiste(const string &path)
