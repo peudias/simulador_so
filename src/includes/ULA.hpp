@@ -1,8 +1,9 @@
 #ifndef ULA_HPP
 #define ULA_HPP
 
+#include "enums/Opcode.hpp"
+
 #include <iostream>
-#include "Opcode.hpp"
 
 using namespace std;
 

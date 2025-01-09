@@ -2,9 +2,11 @@
 #define ESCALONADOR_HPP
 
 #include "PCB.hpp"
+
 #include <queue>
 #include <vector>
 #include <mutex>
+#include <functional>
 
 using namespace std;
 
