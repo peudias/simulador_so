@@ -6,38 +6,36 @@
   <img align="center" alt="C++" src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white" />
 </div><br/>
 
-## 📝 Sobre o Projeto
+## 🗃️ Arquitetura do Projeto
+
+<p align="center">
+<img src="docs/imgs/image.png" width="700"/> 
+</p>
+<p align="center">
+<em>Figura 1: Diagrama representativo da arquitetura do simulador.</em>
+</p>
 
 <div align="justify">
+A arquitetura do projeto foi idealizada com base no modelo conceitual acima, que representa os principais componentes e interações do simulador. Esse modelo serviu como referência para o desenvolvimento, mas a implementação final foi projetada de forma flexível, permitindo ajustes futuros para atender a requisitos práticos, aprimorar a eficiência e incorporar boas práticas de design.
+
 Este projeto implementa um simulador da Arquitetura de Von Neumann com suporte a múltiplos núcleos, escalonamento e gerenciamento de recursos, utilizando um pipeline MIPS de 5 estágios (IF, ID, EX, MEM, WB). O simulador foi desenvolvido como parte do estudo de Sistemas Operacionais e visa explorar conceitos como execução paralela, escalonamento de processos e otimização de recursos.
 </div>
 
 ## 🗂️ Estrutura do Projeto
 
 <div align="justify">
-O projeto utiliza arquivos de configuração e instruções para definir os cenários de simulação. Os principais arquivos são:
 
-- **[`instructionsN.txt`](https://github.com/celzin/Simulador_SO/tree/main/data/instr)**: Contém as instruções a serem simuladas, onde cada arquivo representa um processo específico.
-- **[`setRegisters.txt`](https://github.com/celzin/Simulador_SO/blob/main/data/setRegisters.txt)**: Define os valores iniciais dos registradores.
-- **[`configBootloader.txt`](https://github.com/celzin/Simulador_SO/blob/main/data/configBootloader.txt)**: Configura os parâmetros de execução, como número de núcleos, diretório de logs e quantum dos processos.
+- `src/`: Diretório com os scripts C++ usados para gerar os outputs e realizar as análises.
+- `docs/`: Diretório contendo as Instruções do trabalho e o Artigo de análise em PDF.
+- `instructionsN.txt/ `: Contém as instruções a serem simuladas, onde cada arquivo representa um processo específico.
+- `setRegisters.txt/`: Define os valores iniciais dos registradores.
+- `configBootloader.txt/`: Configura os parâmetros de execução, como número de núcleos, diretório de logs e quantum dos processos.
+
 </div>
 
-## 🗃️ Arquitetura do Projeto
+## ⚙️ Exemplo de Arquivos de Configuração
 
-<div align="justify">
-A arquitetura do projeto foi idealizada com base no modelo conceitual abaixo, que representa os principais componentes e interações do simulador. Esse modelo serviu como referência para o desenvolvimento, mas a implementação final foi projetada de forma flexível, permitindo ajustes futuros para atender a requisitos práticos, aprimorar a eficiência e incorporar boas práticas de design.
-</div>
-
-<p align="center">
-<img src="docs/imgs/image.png" width="700"/> 
-</p>
-<p align="center">
-<em>Figura 1: Imagem representativa da esquematização dos componentes do simulador.</em>
-</p>
-
-### Exemplo de Arquivos de Configuração
-
-#### instructionsN.txt
+### instructionsN.txt
 
 Cada arquivo `instructionsN.txt` especifica as instruções para um processo. O formato é:
 `OPERAÇÃO, REGISTRADOR_DESTINO, REGISTRADOR_1, REGISTRADOR_2`.
@@ -58,7 +56,7 @@ ENQ, 7, 3, 4
 IF_igual, 8, 4, 7
 ```
 
-#### setRegisters.txt
+### setRegisters.txt
 
 Define os valores iniciais dos registradores:
 
@@ -70,7 +68,7 @@ Exemplo:
 4,7
 ```
 
-#### configBootloader.txt
+### configBootloader.txt
 
 Configura o número de núcleos, limites de quantum e diretório de logs.
 
