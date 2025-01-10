@@ -7,6 +7,7 @@
 #include <queue>
 #include <vector>
 #include <mutex>
+#include <fstream>
 
 using namespace std;
 
@@ -17,6 +18,11 @@ private:
     queue<PCB *> filaBloqueados;
     PoliticasEscalonamento politicaAtual;
     mutex mtx;
+
+    PCB *selecionarProcessoFCFS(ofstream &outfile);
+    PCB *selecionarProcessoSJF(ofstream &outfile);
+    PCB *selecionarProcessoPrioridade(ofstream &outfile);
+    PCB *selecionarProcessoRoundRobin(ofstream &outfile);
 
 public:
     Escalonador(PoliticasEscalonamento politica = PoliticasEscalonamento::FCFS);

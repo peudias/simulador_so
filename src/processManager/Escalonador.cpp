@@ -29,120 +29,20 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
 
     PCB *processoSelecionado = nullptr;
 
-    if (politicaAtual == PoliticasEscalonamento::FCFS)
+    switch (politicaAtual)
     {
-        processoSelecionado = filaProntos.front();
-        filaProntos.pop();
-        outfile << "\n************************************************************************************************************************\n";
-        outfile << "[Escalonador][FCFS] Retirando o processo " << processoSelecionado->pid << " da fila de prontos." << endl;
-    }
-    else if (politicaAtual == PoliticasEscalonamento::SJF)
-    {
-        // Encontrar o processo com menor quantum
-        vector<PCB *> tempoQueue;
-        PCB *processoMenorTempo = nullptr;
-
-        while (!filaProntos.empty())
-        {
-            PCB *atual = filaProntos.front();
-            filaProntos.pop();
-            tempoQueue.push_back(atual);
-
-            if (!processoMenorTempo || atual->quantumProcesso < processoMenorTempo->quantumProcesso)
-            {
-                processoMenorTempo = atual;
-            }
-        }
-
-        // Recolocar todos os processos na fila, exceto o selecionado
-        for (PCB *pcb : tempoQueue)
-        {
-            if (pcb != processoMenorTempo)
-            {
-                filaProntos.push(pcb);
-            }
-        }
-
-        processoSelecionado = processoMenorTempo;
-
-        outfile
-            << "\n************************************************************************************************************************\n";
-        outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de prontos. Quantum: " << processoMenorTempo->quantumProcesso << "." << endl;
-    }
-    else if (politicaAtual == PoliticasEscalonamento::PRIORIDADE)
-    {
-        // Encontrar o processo com maior prioridade
-        vector<PCB *> prioridadeQueue;
-        PCB *processoMaiorPrioridade = nullptr;
-
-        while (!filaProntos.empty())
-        {
-            PCB *atual = filaProntos.front();
-            filaProntos.pop();
-            prioridadeQueue.push_back(atual);
-
-            if (!processoMaiorPrioridade || atual->prioridade > processoMaiorPrioridade->prioridade)
-            {
-                processoMaiorPrioridade = atual;
-            }
-        }
-
-        // Recolocar todos os processos na fila, exceto o selecionado
-        for (PCB *pcb : prioridadeQueue)
-        {
-            if (pcb != processoMaiorPrioridade)
-            {
-                filaProntos.push(pcb);
-            }
-        }
-
-        processoSelecionado = processoMaiorPrioridade;
-
-        outfile << "\n************************************************************************************************************************\n";
-        outfile << "[Escalonador][Prioridade] Retirando o processo " << processoMaiorPrioridade->pid
-                << " da fila de prontos. Prioridade [Nível " << processoMaiorPrioridade->prioridade << "][";
-
-        for (int j = 0; j < processoMaiorPrioridade->prioridade; ++j)
-        {
-            outfile << "★";
-        }
-        outfile << "]" << endl;
-    }
-    else if (politicaAtual == PoliticasEscalonamento::ROUNDROBIN)
-    {
-        // Selecionar o próximo processo na fila circular
-        processoSelecionado = filaProntos.front();
-        filaProntos.pop();
-
-        // Verificar se o processo foi finalizado
-        if (processoSelecionado->verificarEstado(FINALIZADO))
-        {
-            outfile << "[Escalonador][RoundRobin] Processo " << processoSelecionado->pid << " já finalizado. Removendo da fila." << endl;
-            return processoSelecionado; // Não reinserir processos finalizados
-        }
-
-        // Decrementa o quantum do processo
-        processoSelecionado->decrementarQuantum(outfile);
-
-        // Se o quantum expirou, verifica se o processo terminou
-        if (processoSelecionado->quantumExpirado())
-        {
-            if (processoSelecionado->verificarEstado(FINALIZADO))
-            {
-                outfile << "[Escalonador][RoundRobin] Processo " << processoSelecionado->pid << " finalizado." << endl;
-                return processoSelecionado; // Processo finalizado, não reinserir na fila
-            }
-            else
-            {
-                processoSelecionado->resetarQuantum(outfile);
-                outfile << "[Escalonador][RoundRobin] Quantum do processo " << processoSelecionado->pid
-                        << " expirou. Resetando para " << processoSelecionado->quantumProcesso << " ms." << endl;
-            }
-        }
-
-        // Reinsere o processo na fila, se não finalizado
-        filaProntos.push(processoSelecionado);
-        return processoSelecionado;
+    case PoliticasEscalonamento::FCFS:
+        processoSelecionado = selecionarProcessoFCFS(outfile);
+        break;
+    case PoliticasEscalonamento::SJF:
+        processoSelecionado = selecionarProcessoSJF(outfile);
+        break;
+    case PoliticasEscalonamento::PRIORIDADE:
+        processoSelecionado = selecionarProcessoPrioridade(outfile);
+        break;
+    case PoliticasEscalonamento::ROUNDROBIN:
+        processoSelecionado = selecionarProcessoRoundRobin(outfile);
+        break;
     }
 
     if (!processoSelecionado)
@@ -182,4 +82,114 @@ bool Escalonador::filaVazia() const
 bool Escalonador::temProcessosProntos() const
 {
     return !filaProntos.empty();
+}
+
+PCB *Escalonador::selecionarProcessoFCFS(ofstream &outfile)
+{
+    PCB *processo = filaProntos.front();
+    filaProntos.pop();
+    outfile << "\n************************************************************************************************************************\n";
+    outfile << "[Escalonador][FCFS] Retirando o processo " << processo->pid << " da fila de prontos.\n";
+    return processo;
+}
+
+PCB *Escalonador::selecionarProcessoSJF(ofstream &outfile)
+{
+    vector<PCB *> tempoQueue;
+    PCB *processoMenorTempo = nullptr;
+
+    while (!filaProntos.empty())
+    {
+        PCB *atual = filaProntos.front();
+        filaProntos.pop();
+        tempoQueue.push_back(atual);
+
+        if (!processoMenorTempo || atual->quantumProcesso < processoMenorTempo->quantumProcesso)
+        {
+            processoMenorTempo = atual;
+        }
+    }
+
+    for (PCB *pcb : tempoQueue)
+    {
+        if (pcb != processoMenorTempo)
+        {
+            filaProntos.push(pcb);
+        }
+    }
+
+    outfile << "\n************************************************************************************************************************\n";
+    outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de prontos. Quantum: " << processoMenorTempo->quantumProcesso << ".\n";
+
+    return processoMenorTempo;
+}
+
+PCB *Escalonador::selecionarProcessoPrioridade(ofstream &outfile)
+{
+    vector<PCB *> prioridadeQueue;
+    PCB *processoMaiorPrioridade = nullptr;
+
+    while (!filaProntos.empty())
+    {
+        PCB *atual = filaProntos.front();
+        filaProntos.pop();
+        prioridadeQueue.push_back(atual);
+
+        if (!processoMaiorPrioridade || atual->prioridade > processoMaiorPrioridade->prioridade)
+        {
+            processoMaiorPrioridade = atual;
+        }
+    }
+
+    for (PCB *pcb : prioridadeQueue)
+    {
+        if (pcb != processoMaiorPrioridade)
+        {
+            filaProntos.push(pcb);
+        }
+    }
+
+    outfile << "\n************************************************************************************************************************\n";
+    outfile << "[Escalonador][Prioridade] Retirando o processo " << processoMaiorPrioridade->pid
+            << " da fila de prontos. Prioridade [Nível " << processoMaiorPrioridade->prioridade << "][";
+
+    for (int j = 0; j < processoMaiorPrioridade->prioridade; ++j)
+    {
+        outfile << "★";
+    }
+    outfile << "]\n";
+
+    return processoMaiorPrioridade;
+}
+
+PCB *Escalonador::selecionarProcessoRoundRobin(ofstream &outfile)
+{
+    PCB *processo = filaProntos.front();
+    filaProntos.pop();
+
+    if (processo->verificarEstado(FINALIZADO))
+    {
+        outfile << "[Escalonador][RoundRobin] Processo " << processo->pid << " já finalizado. Removendo da fila.\n";
+        return processo;
+    }
+
+    processo->decrementarQuantum(outfile);
+
+    if (processo->quantumExpirado())
+    {
+        if (processo->verificarEstado(FINALIZADO))
+        {
+            outfile << "[Escalonador][RoundRobin] Processo " << processo->pid << " finalizado.\n";
+            return processo;
+        }
+        else
+        {
+            processo->resetarQuantum(outfile);
+            outfile << "[Escalonador][RoundRobin] Quantum do processo " << processo->pid
+                    << " expirou. Resetando para " << processo->quantumProcesso << " ms.\n";
+        }
+    }
+
+    filaProntos.push(processo);
+    return processo;
 }
