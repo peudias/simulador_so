@@ -142,12 +142,20 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     // Lista de arquivos de instrução
     vector<string> arquivosInstrucoes = disco.listInstructionsFile("data/instr");
 
-    // Configurando a política de escalonamento
-    globalLog << "\n===== Configurando a política de escalonamento =====\n";
-    globalLog << "Política: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF      ? "SJF"
-                                                                                                : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::Prioridade ? "Prioridade"
-                                                                                                                                                               : "RoundRobin")
+    // Log para Estado Inical do SO
+    globalLog << endl
+              << "===== Informações Iniciais do Sistema Operacional =====" << endl;
+    globalLog << "Número de Núcleos: " << NUM_NUCLEOS << endl;
+    globalLog << "Número de Processos: " << disco.listInstructionsFile("data/instr").size() << endl;
+    globalLog << "Política de Escalonamento: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF      ? "SJF"
+                                                                                                                 : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::Prioridade ? "Prioridade"
+                                                                                                                                                                                : "RoundRobin")
               << endl;
+    globalLog << "Recursos Disponíveis: " << endl;
+    periferico.exibirPerifericos(globalLog);
+    globalLog << "=======================================================" << endl;
+
+    // Configurando a política de escalonamento
     escalonador.configurarPolitica(POLITICA_ESCALONAMENTO);
 
     // Criando e configurando PCBs
