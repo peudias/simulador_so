@@ -38,7 +38,7 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
     }
     else if (politicaAtual == PoliticasEscalonamento::SJF)
     {
-        // Encontrar o processo com menor tempo estimado
+        // Encontrar o processo com menor quantum
         vector<PCB *> tempoQueue;
         PCB *processoMenorTempo = nullptr;
 
@@ -48,7 +48,7 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
             filaProntos.pop();
             tempoQueue.push_back(atual);
 
-            if (!processoMenorTempo || atual->tempoEstimado < processoMenorTempo->tempoEstimado)
+            if (!processoMenorTempo || atual->quantumProcesso < processoMenorTempo->quantumProcesso)
             {
                 processoMenorTempo = atual;
             }
@@ -67,7 +67,7 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
 
         outfile
             << "\n************************************************************************************************************************\n";
-        outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de prontos. Tempo estimado: " << processoMenorTempo->tempoEstimado << " ms." << endl;
+        outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de prontos. Quantum: " << processoMenorTempo->quantumProcesso << "." << endl;
     }
 
     if (!processoSelecionado)

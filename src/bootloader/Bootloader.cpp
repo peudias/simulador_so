@@ -96,7 +96,7 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
 
         pcb->setTempoEstimado(pcb->quantumProcesso);
         globalLog << endl
-                  << "[Bootloader] Processo " << pcb->pid << " configurado com o tempo estimado " << pcb->quantumProcesso << "." << endl;
+                  << "[Bootloader] Processo " << pcb->pid << " configurado com o quantum " << pcb->quantumProcesso << "." << endl;
 
         // Associar recurso apenas ao processo com PID = 2
         if (pcb->pid == 2)

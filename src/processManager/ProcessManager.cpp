@@ -23,8 +23,8 @@ vector<PCB *> ProcessManager::createPCBs(Disco &disco, RAM &ram, Registers &regs
         // Gera um quantum aleatório para o PCB
         int quantumRandom = distrib(gen);
 
-        // Define o tempo estimado com base no número de instruções e endereço base
-        int tempoEstimado = quantidadeInstrucoes;
+        // Define o quantum com base no número de instruções e endereço base
+        int tempoEstimado = quantumRandom;
 
         // Cria o PCB associado à faixa de memória de instruções
         PCB *novoPCB = new PCB(i + 1, quantumRandom, regs, enderecoAtual, enderecoAtual + quantidadeInstrucoes - 1, tempoEstimado);
