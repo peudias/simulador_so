@@ -69,7 +69,7 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
             << "\n************************************************************************************************************************\n";
         outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de prontos. Quantum: " << processoMenorTempo->quantumProcesso << "." << endl;
     }
-    else if (politicaAtual == PoliticasEscalonamento::Prioridade)
+    else if (politicaAtual == PoliticasEscalonamento::PRIORIDADE)
     {
         // Encontrar o processo com maior prioridade
         vector<PCB *> prioridadeQueue;

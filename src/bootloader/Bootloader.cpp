@@ -49,8 +49,8 @@ void Bootloader::loadConfigBootloader(const string &file)
     unordered_map<string, PoliticasEscalonamento> politicaMap = {
         {"FCFS", PoliticasEscalonamento::FCFS},
         {"SJF", PoliticasEscalonamento::SJF},
-        {"Prioridade", PoliticasEscalonamento::Prioridade},
-        {"RoundRobin", PoliticasEscalonamento::RoundRobin}};
+        {"Prioridade", PoliticasEscalonamento::PRIORIDADE},
+        {"RoundRobin", PoliticasEscalonamento::ROUNDROBIN}};
 
     string politicaStr = configs["POLITICA_ESCALONAMENTO"];
     if (politicaMap.find(politicaStr) != politicaMap.end())
@@ -157,7 +157,7 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     globalLog << "Número de Núcleos: " << NUM_NUCLEOS << endl;
     globalLog << "Número de Processos: " << disco.listInstructionsFile("data/instr").size() << endl;
     globalLog << "Política de Escalonamento: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF      ? "SJF"
-                                                                                                                 : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::Prioridade ? "Prioridade"
+                                                                                                                 : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::PRIORIDADE ? "Prioridade"
                                                                                                                                                                                 : "RoundRobin")
               << endl;
     globalLog << "Recursos Disponíveis: " << endl;

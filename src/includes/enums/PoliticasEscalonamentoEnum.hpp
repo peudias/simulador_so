@@ -5,8 +5,8 @@ enum class PoliticasEscalonamento
 {
     FCFS,
     SJF,
-    Prioridade,
-    RoundRobin
+    PRIORIDADE,
+    ROUNDROBIN
 };
 
 #endif
