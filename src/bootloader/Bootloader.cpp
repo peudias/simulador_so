@@ -85,7 +85,8 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
         }
 
         pcb->setTempoEstimado(tempoEstimado);
-        globalLog << "[Bootloader] Processo " << pcb->pid << " configurado com o tempo estimado " << tempoEstimado << "." << endl;
+        globalLog << endl
+                  << "[Bootloader] Processo " << pcb->pid << " configurado com o tempo estimado " << tempoEstimado << "." << endl;
 
         // Associar recurso apenas ao processo com PID = 2
         if (pcb->pid == 2)
@@ -124,7 +125,7 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
         return;
     }
 
-    globalLog << "Inicializando o sistema...\n";
+    globalLog << "Inicializando o sistema..." << endl;
 
     // Configurando os registradores
     disco.setRegistersFromFile(regs, "data/setRegisters.txt");
@@ -133,7 +134,8 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     vector<string> arquivosInstrucoes = disco.listInstructionsFile("data/instr");
 
     // Configurando a politica de escalonamento (FIFO ou SJF)
-    globalLog << "Configurando a política de escalonamento para SJF" << endl;
+    globalLog << endl
+              << "Configurando a política de escalonamento para SJF" << endl;
     escalonador.configurarPolitica(PoliticasEscalonamento::SJF);
 
     // Criando e configurando PCBs
