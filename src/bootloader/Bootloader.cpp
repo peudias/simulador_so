@@ -94,9 +94,18 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
 
         pcb->alocarMemoria(ram, enderecoBase, limite);
 
+        // tempo estimado (POLÍTICA: SJF)
         pcb->setTempoEstimado(pcb->quantumProcesso);
         globalLog << endl
                   << "[Bootloader] Processo " << pcb->pid << " configurado com o quantum " << pcb->quantumProcesso << "." << endl;
+
+        // nível de prioridade (POLÍTICA: Prioridade)
+        globalLog << "[Bootloader] Processo " << pcb->pid << " configurado com prioridade: [Nível " << pcb->prioridade << "][";
+        for (int j = 0; j < pcb->prioridade; ++j)
+        {
+            globalLog << "★";
+        }
+        globalLog << "]" << endl;
 
         // Associar recurso apenas ao processo com PID = 2
         if (pcb->pid == 2)

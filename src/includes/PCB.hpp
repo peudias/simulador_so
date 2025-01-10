@@ -24,6 +24,7 @@ public:
     int enderecoBaseInstrucoes;
     int enderecoLimiteInstrucoes;
     int tempoEstimado;
+    int prioridade;
     EstadoProcesso estado;
     Registers registradores;
     Perifericos recursos;
@@ -31,7 +32,7 @@ public:
     vector<int> memoriaAlocada; // Memória alocada ao processo (endereço base e limite)
     vector<int> estadoPipeline; // Estado do pipeline (valores intermediários)
 
-    PCB(int id, int quantum, const Registers &regs, int enderecoBaseInstrucoes, int enderecoLimiteInstrucoes, int tempoEstimado);
+    PCB(int id, int quantum, const Registers &regs, int enderecoBaseInstrucoes, int enderecoLimiteInstrucoes, int tempoEstimado, int prioridade);
 
     void salvarEstado(const vector<int> &pipelineState);
     void restaurarEstado(vector<int> &pipelineState, ofstream &outfile);

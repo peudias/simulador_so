@@ -69,6 +69,45 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
             << "\n************************************************************************************************************************\n";
         outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de prontos. Quantum: " << processoMenorTempo->quantumProcesso << "." << endl;
     }
+    else if (politicaAtual == PoliticasEscalonamento::Prioridade)
+    {
+        // Encontrar o processo com maior prioridade
+        vector<PCB *> prioridadeQueue;
+        PCB *processoMaiorPrioridade = nullptr;
+
+        while (!filaProntos.empty())
+        {
+            PCB *atual = filaProntos.front();
+            filaProntos.pop();
+            prioridadeQueue.push_back(atual);
+
+            if (!processoMaiorPrioridade || atual->prioridade > processoMaiorPrioridade->prioridade)
+            {
+                processoMaiorPrioridade = atual;
+            }
+        }
+
+        // Recolocar todos os processos na fila, exceto o selecionado
+        for (PCB *pcb : prioridadeQueue)
+        {
+            if (pcb != processoMaiorPrioridade)
+            {
+                filaProntos.push(pcb);
+            }
+        }
+
+        processoSelecionado = processoMaiorPrioridade;
+
+        outfile << "\n************************************************************************************************************************\n";
+        outfile << "[Escalonador][Prioridade] Retirando o processo " << processoMaiorPrioridade->pid
+                << " da fila de prontos. Prioridade [Nível " << processoMaiorPrioridade->prioridade << "][";
+
+        for (int j = 0; j < processoMaiorPrioridade->prioridade; ++j)
+        {
+            outfile << "★";
+        }
+        outfile << "]" << endl;
+    }
 
     if (!processoSelecionado)
     {
