@@ -96,23 +96,35 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
 
         // tempo estimado (POLÍTICA: SJF)
         pcb->setTempoEstimado(pcb->quantumProcesso);
-        globalLog << endl
-                  << "[Bootloader] Processo " << pcb->pid << " configurado com o quantum " << pcb->quantumProcesso << "." << endl;
-
-        // nível de prioridade (POLÍTICA: Prioridade)
-        globalLog << "[Bootloader] Processo " << pcb->pid << " configurado com prioridade: [Nível " << pcb->prioridade << "][";
-        for (int j = 0; j < pcb->prioridade; ++j)
+        if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF)
         {
-            globalLog << "★";
+            globalLog << endl
+                      << "[Bootloader][SJF] Processo " << pcb->pid << " configurado com o quantum " << pcb->quantumProcesso << "." << endl;
         }
-        globalLog << "]" << endl;
 
-        // Associar recurso apenas ao processo com PID = 2
-        if (pcb->pid == 2)
+        if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::PRIORIDADE)
         {
-            string recursoNecessario = "impressora";       // Recurso necessário
-            pcb->associarRecurso(recursoNecessario, true); // Aloca o recurso
-            globalLog << "[Bootloader] Recurso " << recursoNecessario << " alocado ao processo " << pcb->pid << ".\n";
+            // nível de prioridade (POLÍTICA: Prioridade)
+            globalLog << "[Bootloader][Prioridade] Processo " << pcb->pid << " configurado com prioridade: [Nível " << pcb->prioridade << "][";
+            for (int j = 0; j < pcb->prioridade; ++j)
+            {
+                globalLog << "★";
+            }
+            globalLog << "]" << endl;
+
+            // Associar recurso apenas ao processo com PID = 2
+            if (pcb->pid == 2)
+            {
+                string recursoNecessario = "impressora";       // Recurso necessário
+                pcb->associarRecurso(recursoNecessario, true); // Aloca o recurso
+                globalLog << "[Bootloader] Recurso " << recursoNecessario << " alocado ao processo " << pcb->pid << ".\n";
+            }
+        }
+
+        if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::ROUNDROBIN)
+        {
+            globalLog << endl
+                      << "[Bootloader][RoundRobin] Processo " << pcb->pid << " preparado com quantum inicial: " << pcb->quantumRestante << " ms." << endl;
         }
 
         escalonador.adicionarProcesso(pcb, globalLog);

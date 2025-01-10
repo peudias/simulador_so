@@ -108,6 +108,42 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
         }
         outfile << "]" << endl;
     }
+    else if (politicaAtual == PoliticasEscalonamento::ROUNDROBIN)
+    {
+        // Selecionar o próximo processo na fila circular
+        processoSelecionado = filaProntos.front();
+        filaProntos.pop();
+
+        // Verificar se o processo foi finalizado
+        if (processoSelecionado->verificarEstado(FINALIZADO))
+        {
+            outfile << "[Escalonador][RoundRobin] Processo " << processoSelecionado->pid << " já finalizado. Removendo da fila." << endl;
+            return processoSelecionado; // Não reinserir processos finalizados
+        }
+
+        // Decrementa o quantum do processo
+        processoSelecionado->decrementarQuantum(outfile);
+
+        // Se o quantum expirou, verifica se o processo terminou
+        if (processoSelecionado->quantumExpirado())
+        {
+            if (processoSelecionado->verificarEstado(FINALIZADO))
+            {
+                outfile << "[Escalonador][RoundRobin] Processo " << processoSelecionado->pid << " finalizado." << endl;
+                return processoSelecionado; // Processo finalizado, não reinserir na fila
+            }
+            else
+            {
+                processoSelecionado->resetarQuantum(outfile);
+                outfile << "[Escalonador][RoundRobin] Quantum do processo " << processoSelecionado->pid
+                        << " expirou. Resetando para " << processoSelecionado->quantumProcesso << " ms." << endl;
+            }
+        }
+
+        // Reinsere o processo na fila, se não finalizado
+        filaProntos.push(processoSelecionado);
+        return processoSelecionado;
+    }
 
     if (!processoSelecionado)
     {
