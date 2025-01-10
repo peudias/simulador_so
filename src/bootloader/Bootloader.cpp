@@ -42,12 +42,6 @@ void Bootloader::loadConfigBootloader(const string &file)
     OUTPUT_LOGS_DIR = configs["OUTPUT_LOGS_DIR"];
     QUANTUM_PROCESS_MIN = stoi(configs["QUANTUM_PROCESS_MIN"]);
     QUANTUM_PROCESS_MAX = stoi(configs["QUANTUM_PROCESS_MAX"]);
-
-    if (NUM_NUCLEOS <= 0 || QUANTUM_PROCESS_MIN <= 0 || QUANTUM_PROCESS_MAX <= 0)
-    {
-        cerr << "Configuração inválida: valores numéricos devem ser maiores que zero." << endl;
-        exit(EXIT_FAILURE);
-    }
 }
 
 void Bootloader::garantirDiretorioSaidaExiste(const string &path)
@@ -72,13 +66,26 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
     // Criando PCBs
     vector<PCB *> pcbs = ProcessManager::createPCBs(disco, ram, regs, arquivosInstrucoes);
 
+    size_t index = 0;
+
     // Alocação de memória para cada processo && Adicionando os processos ao escalonador
     for (auto &pcb : pcbs)
     {
-        int enderecoBase = pcb->getEnderecoBaseInstrucoes(); // Exemplo: faixas de memória de 5 endereços por processo
+        int enderecoBase = pcb->getEnderecoBaseInstrucoes();
         int limite = pcb->getLimiteInstrucoes();
 
         pcb->alocarMemoria(ram, enderecoBase, limite);
+
+        // Calcular o tempo estimado com base no número de instruções e endereço base
+        int tempoEstimado = disco.loadInstructionsFromFile(ram, arquivosInstrucoes[index], enderecoBase);
+        if (tempoEstimado == -1)
+        {
+            index++;
+            continue;
+        }
+
+        pcb->setTempoEstimado(tempoEstimado);
+        globalLog << "[Bootloader] Processo " << pcb->pid << " configurado com o tempo estimado " << tempoEstimado << "." << endl;
 
         // Associar recurso apenas ao processo com PID = 2
         if (pcb->pid == 2)
@@ -89,6 +96,7 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
         }
 
         escalonador.adicionarProcesso(pcb, globalLog);
+        index++;
     }
 
     return pcbs;

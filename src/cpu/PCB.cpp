@@ -2,8 +2,9 @@
 #include <iostream>
 #include <iomanip>
 
-PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limite)
-    : pid(id), estado(PRONTO), PC(0), quantumProcesso(quantum), quantumRestante(quantum), registradores(regs), enderecoBaseInstrucoes(enderecoBase), enderecoLimiteInstrucoes(limite) {}
+PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limite, int tempoEstimado)
+    : pid(id), estado(PRONTO), PC(0), quantumProcesso(quantum), quantumRestante(quantum),
+      registradores(regs), enderecoBaseInstrucoes(enderecoBase), enderecoLimiteInstrucoes(limite), tempoEstimado(tempoEstimado) {}
 
 void PCB::atualizarEstado(EstadoProcesso novoEstado, ofstream &outfile)
 {
@@ -175,4 +176,9 @@ int PCB::getEnderecoBaseInstrucoes() const
 int PCB::getLimiteInstrucoes() const
 {
     return enderecoLimiteInstrucoes;
+}
+
+void PCB::setTempoEstimado(int tempo)
+{
+    tempoEstimado = tempo;
 }

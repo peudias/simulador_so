@@ -2,6 +2,7 @@
 #define ESCALONADOR_HPP
 
 #include "PCB.hpp"
+#include "enums/PoliticasEscalonamento.hpp"
 
 #include <queue>
 #include <vector>
@@ -9,6 +10,15 @@
 #include <functional>
 
 using namespace std;
+
+// Comparador para SJF
+struct SJFComparator
+{
+    bool operator()(PCB *a, PCB *b)
+    {
+        return a->tempoEstimado > b->tempoEstimado;
+    }
+};
 
 class Escalonador
 {
