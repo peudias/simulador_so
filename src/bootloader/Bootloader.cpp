@@ -132,6 +132,10 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     // Lista de arquivos de instrução
     vector<string> arquivosInstrucoes = disco.listInstructionsFile("data/instr");
 
+    // Configurando a politica de escalonamento (FIFO ou SJF)
+    globalLog << "Configurando a política de escalonamento para SJF" << endl;
+    escalonador.configurarPolitica(PoliticasEscalonamento::SJF);
+
     // Criando e configurando PCBs
     vector<PCB *> pcbs = Bootloader::createAndConfigPCBs(disco, ram, regs, escalonador, arquivosInstrucoes, globalLog);
 

@@ -7,28 +7,22 @@
 #include <queue>
 #include <vector>
 #include <mutex>
-#include <functional>
 
 using namespace std;
-
-// Comparador para SJF
-struct SJFComparator
-{
-    bool operator()(PCB *a, PCB *b)
-    {
-        return a->tempoEstimado > b->tempoEstimado;
-    }
-};
 
 class Escalonador
 {
 private:
     queue<PCB *> filaProntos;
     queue<PCB *> filaBloqueados;
+    PoliticasEscalonamento politicaAtual;
     mutex mtx;
 
 public:
-    Escalonador();
+    Escalonador(PoliticasEscalonamento politica = PoliticasEscalonamento::FIFO);
+
+    void configurarPolitica(PoliticasEscalonamento novaPolitica);
+
     void adicionarProcesso(PCB *processo, ofstream &outfile); // Adiciona um processo à fila
     PCB *obterProximoProcesso(ofstream &outfile);             // Retorna o próximo processo a ser executado
 
