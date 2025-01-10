@@ -1,7 +1,7 @@
 #ifndef PCB_HPP
 #define PCB_HPP
 
-#include "enums/EstadoProcesso.hpp"
+#include "enums/EstadoProcessoEnum.hpp"
 #include "Registers.hpp"
 #include "Perifericos.hpp"
 #include "RAM.hpp"

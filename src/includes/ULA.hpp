@@ -1,7 +1,7 @@
 #ifndef ULA_HPP
 #define ULA_HPP
 
-#include "enums/Opcode.hpp"
+#include "enums/OpcodeEnum.hpp"
 
 #include <iostream>
 

@@ -2,7 +2,7 @@
 #define ESCALONADOR_HPP
 
 #include "PCB.hpp"
-#include "enums/PoliticasEscalonamento.hpp"
+#include "enums/PoliticasEscalonamentoEnum.hpp"
 
 #include <queue>
 #include <vector>
