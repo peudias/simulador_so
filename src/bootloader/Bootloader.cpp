@@ -66,8 +66,6 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
     // Criando PCBs
     vector<PCB *> pcbs = ProcessManager::createPCBs(disco, ram, regs, arquivosInstrucoes);
 
-    size_t index = 0;
-
     // Alocação de memória para cada processo && Adicionando os processos ao escalonador
     for (auto &pcb : pcbs)
     {
@@ -76,17 +74,9 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
 
         pcb->alocarMemoria(ram, enderecoBase, limite);
 
-        // Calcular o tempo estimado com base no número de instruções e endereço base
-        int tempoEstimado = disco.loadInstructionsFromFile(ram, arquivosInstrucoes[index], enderecoBase);
-        if (tempoEstimado == -1)
-        {
-            index++;
-            continue;
-        }
-
-        pcb->setTempoEstimado(tempoEstimado);
+        pcb->setTempoEstimado(pcb->quantumProcesso);
         globalLog << endl
-                  << "[Bootloader] Processo " << pcb->pid << " configurado com o tempo estimado " << tempoEstimado << "." << endl;
+                  << "[Bootloader] Processo " << pcb->pid << " configurado com o tempo estimado " << pcb->quantumProcesso << "." << endl;
 
         // Associar recurso apenas ao processo com PID = 2
         if (pcb->pid == 2)
@@ -97,7 +87,6 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
         }
 
         escalonador.adicionarProcesso(pcb, globalLog);
-        index++;
     }
 
     return pcbs;
