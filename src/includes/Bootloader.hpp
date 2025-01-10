@@ -28,6 +28,7 @@ public:
     static int NUM_NUCLEOS;
     static int QUANTUM_PROCESS_MIN;
     static int QUANTUM_PROCESS_MAX;
+    static PoliticasEscalonamento POLITICA_ESCALONAMENTO;
 
     static void loadConfigBootloader(const string &file);
     static void garantirDiretorioSaidaExiste(const string &path);

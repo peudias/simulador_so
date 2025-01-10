@@ -3,7 +3,7 @@
 
 enum class PoliticasEscalonamento
 {
-    FIFO,
+    FCFS,
     SJF,
     Prioridade,
     RoundRobin

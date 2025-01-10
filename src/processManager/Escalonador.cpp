@@ -29,12 +29,12 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
 
     PCB *processoSelecionado = nullptr;
 
-    if (politicaAtual == PoliticasEscalonamento::FIFO)
+    if (politicaAtual == PoliticasEscalonamento::FCFS)
     {
         processoSelecionado = filaProntos.front();
         filaProntos.pop();
         outfile << "\n************************************************************************************************************************\n";
-        outfile << "[Escalonador][FIFO] Retirando o processo " << processoSelecionado->pid << " da fila de prontos." << endl;
+        outfile << "[Escalonador][FCFS] Retirando o processo " << processoSelecionado->pid << " da fila de prontos." << endl;
     }
     else if (politicaAtual == PoliticasEscalonamento::SJF)
     {

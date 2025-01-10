@@ -19,7 +19,7 @@ private:
     mutex mtx;
 
 public:
-    Escalonador(PoliticasEscalonamento politica = PoliticasEscalonamento::FIFO);
+    Escalonador(PoliticasEscalonamento politica = PoliticasEscalonamento::FCFS);
 
     void configurarPolitica(PoliticasEscalonamento novaPolitica);
 

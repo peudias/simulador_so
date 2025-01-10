@@ -5,6 +5,7 @@ string Bootloader::OUTPUT_LOGS_DIR = "";
 int Bootloader::NUM_NUCLEOS = 0;
 int Bootloader::QUANTUM_PROCESS_MIN = 0;
 int Bootloader::QUANTUM_PROCESS_MAX = 0;
+PoliticasEscalonamento Bootloader::POLITICA_ESCALONAMENTO = PoliticasEscalonamento::FCFS;
 
 void Bootloader::loadConfigBootloader(const string &file)
 {
@@ -32,7 +33,8 @@ void Bootloader::loadConfigBootloader(const string &file)
     inputFile.close();
 
     if (configs.find("NUM_NUCLEOS") == configs.end() || configs.find("OUTPUT_LOGS_DIR") == configs.end() ||
-        configs.find("QUANTUM_PROCESS_MIN") == configs.end() || configs.find("QUANTUM_PROCESS_MAX") == configs.end())
+        configs.find("QUANTUM_PROCESS_MIN") == configs.end() || configs.find("QUANTUM_PROCESS_MAX") == configs.end() ||
+        configs.find("POLITICA_ESCALONAMENTO") == configs.end())
     {
         cerr << "Arquivo de configuração ('data/configBootloader.txt') inválido: chaves necessárias estão faltando ou definidas incorretamente." << endl;
         exit(EXIT_FAILURE);
@@ -42,6 +44,24 @@ void Bootloader::loadConfigBootloader(const string &file)
     OUTPUT_LOGS_DIR = configs["OUTPUT_LOGS_DIR"];
     QUANTUM_PROCESS_MIN = stoi(configs["QUANTUM_PROCESS_MIN"]);
     QUANTUM_PROCESS_MAX = stoi(configs["QUANTUM_PROCESS_MAX"]);
+
+    // Mapeando a política de escalonamento
+    unordered_map<string, PoliticasEscalonamento> politicaMap = {
+        {"FCFS", PoliticasEscalonamento::FCFS},
+        {"SJF", PoliticasEscalonamento::SJF},
+        {"Prioridade", PoliticasEscalonamento::Prioridade},
+        {"RoundRobin", PoliticasEscalonamento::RoundRobin}};
+
+    string politicaStr = configs["POLITICA_ESCALONAMENTO"];
+    if (politicaMap.find(politicaStr) != politicaMap.end())
+    {
+        POLITICA_ESCALONAMENTO = politicaMap[politicaStr];
+    }
+    else
+    {
+        cerr << "Política de escalonamento inválida: " << politicaStr << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 void Bootloader::garantirDiretorioSaidaExiste(const string &path)
@@ -122,10 +142,13 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     // Lista de arquivos de instrução
     vector<string> arquivosInstrucoes = disco.listInstructionsFile("data/instr");
 
-    // Configurando a politica de escalonamento (FIFO ou SJF)
-    globalLog << endl
-              << "Configurando a política de escalonamento para SJF" << endl;
-    escalonador.configurarPolitica(PoliticasEscalonamento::SJF);
+    // Configurando a política de escalonamento
+    globalLog << "\n===== Configurando a política de escalonamento =====\n";
+    globalLog << "Política: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF      ? "SJF"
+                                                                                                : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::Prioridade ? "Prioridade"
+                                                                                                                                                               : "RoundRobin")
+              << endl;
+    escalonador.configurarPolitica(POLITICA_ESCALONAMENTO);
 
     // Criando e configurando PCBs
     vector<PCB *> pcbs = Bootloader::createAndConfigPCBs(disco, ram, regs, escalonador, arquivosInstrucoes, globalLog);

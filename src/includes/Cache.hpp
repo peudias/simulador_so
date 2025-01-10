@@ -17,7 +17,7 @@ private:
     };
 
     unordered_map<int, CacheLine> cache;
-    queue<int> fifoQueue;
+    queue<int> fcfsQueue;
     int capacidade;
 
 public:
@@ -49,16 +49,16 @@ public:
         }
 
         cache[address] = {value, writeBack};
-        fifoQueue.push(address);
+        fcfsQueue.push(address);
     }
 
     void evict()
     {
-        if (fifoQueue.empty())
+        if (fcfsQueue.empty())
             return;
 
-        int oldAddress = fifoQueue.front();
-        fifoQueue.pop();
+        int oldAddress = fcfsQueue.front();
+        fcfsQueue.pop();
 
         if (cache[oldAddress].dirty)
         {
