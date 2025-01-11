@@ -2,10 +2,8 @@
 #define ESCALONADOR_HPP
 
 #include "PCB.hpp"
-#include "enums/PoliticasEscalonamentoEnum.hpp"
-
+#include "enums/PoliticasEscalonamento.hpp"
 #include <queue>
-#include <vector>
 #include <mutex>
 #include <fstream>
 
@@ -18,11 +16,6 @@ private:
     queue<PCB *> filaBloqueados;
     PoliticasEscalonamento politicaAtual;
     mutex mtx;
-
-    PCB *selecionarProcessoFCFS(ofstream &outfile);
-    PCB *selecionarProcessoSJF(ofstream &outfile);
-    PCB *selecionarProcessoPrioridade(ofstream &outfile);
-    PCB *selecionarProcessoRoundRobin(ofstream &outfile);
 
 public:
     Escalonador(PoliticasEscalonamento politica = PoliticasEscalonamento::FCFS);
