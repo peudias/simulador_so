@@ -165,7 +165,7 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
 
     // Log para Estado Inical do SO
     globalLog << endl
-              << "===== Informações Iniciais do Sistema Operacional =====" << endl;
+              << "====== Informações Gerais do Sistema Operacional ======" << endl;
     globalLog << "Número de Núcleos: " << NUM_NUCLEOS << endl;
     globalLog << "Número de Processos: " << disco.listInstructionsFile("data/instr").size() << endl;
     globalLog << "Política de Escalonamento: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF      ? "SJF"
@@ -174,7 +174,8 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
               << endl;
     globalLog << "Recursos Disponíveis: " << endl;
     periferico.exibirPerifericos(globalLog);
-    globalLog << "=======================================================" << endl;
+    globalLog << "=======================================================" << endl
+              << endl;
 
     // Configurando a política de escalonamento
     escalonador.configurarPolitica(POLITICA_ESCALONAMENTO);
@@ -205,22 +206,24 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     auto fim = chrono::high_resolution_clock::now();
     double duracao = chrono::duration_cast<chrono::duration<double, milli>>(fim - inicio).count();
 
-    globalLog << "\n===== Tempo Total de Execução =====\n";
+    globalLog << endl
+              << "=============== Tempo Total de Execução ===============" << endl;
     globalLog << "Duração total: " << fixed << setprecision(3) << duracao << " ms\n";
 
     // Exibindo estatísticas de cada núcleo
     for (size_t i = 0; i < cores.size(); ++i)
     {
-        globalLog << "\n===== [CORE " << i + 1 << "] =====";
+        globalLog << endl
+                  << "====================== [CORE " << i + 1 << "] =======================";
         cores[i].exibirTempoCore(globalLog);
     }
 
     // Exibindo o estado final da RAM
-    globalLog << "\n===== Estado Final da RAM =====\n";
+    globalLog << "\n================= Estado Final da RAM =================\n";
     ram.display(globalLog);
 
     // Exibindo o estado final do Disco
-    globalLog << "\n===== Estado Final do Disco =====\n";
+    globalLog << "\n================ Estado Final do Disco ================\n";
     disco.display(globalLog);
 
     // Liberando memória dos processos

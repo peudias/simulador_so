@@ -143,7 +143,8 @@ void Core::run()
 void Core::exibirTempoCore(ofstream &outfile)
 {
     outfile << fixed << setprecision(3);
-    outfile << "\n===== Estatísticas do Núcleo =====\n";
+    outfile << endl
+            << "=============== Estatísticas do Núcleo ================" << endl;
     outfile << "Tempo ocupado: " << tempoOcupado << " ms\n";
     outfile << "Tempo ocioso: " << tempoOcioso << " ms\n";
 
