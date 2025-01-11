@@ -133,7 +133,7 @@ void PCB::exibirPCB(ofstream &outfile) const
                                                         : estado == BLOQUEADO  ? "BLOQUEADO"
                                                                                : "FINALIZADO")
             << "\n"
-            << "Quantum Total: " << quantumProcesso << ", Quantum Restante: " << quantumRestante << "\n"
+            << "Quantum Necessário: " << memoriaAlocada[1] - memoriaAlocada[0] + 1 << ", Quantum Inicial: " << quantumProcesso << ", Quantum Atual: " << quantumRestante << "\n"
             << "PC: " << PC << "\n"
             << "\nRegistradores:\n";
     registradores.display(outfile);

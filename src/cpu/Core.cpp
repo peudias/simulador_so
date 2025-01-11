@@ -49,7 +49,7 @@ void Core::activate(ofstream &outfile)
             if (pcb->PC >= pcb->getLimiteInstrucoes())
             {
                 outfile << "\n[Núcleo " << this_thread::get_id() << "] Processo " << pcb->pid
-                        << " atingiu o limite de instruções (PC: " << pcb->PC
+                        << " executou todas as instruções (PC: " << pcb->PC
                         << ", Base: " << pcb->getEnderecoBaseInstrucoes()
                         << ", Limite: " << pcb->getLimiteInstrucoes()
                         << ")\n";
