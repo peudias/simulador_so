@@ -9,7 +9,8 @@ PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limit
 void PCB::atualizarEstado(EstadoProcesso novoEstado, ofstream &outfile)
 {
     estado = novoEstado;
-    outfile << "[PCB] Processo " << pid << " alterado para estado: "
+    outfile << endl
+            << "[PCB] Processo " << pid << " alterado para estado: "
             << (novoEstado == PRONTO ? "PRONTO" : novoEstado == EXECUCAO ? "EXECUCAO"
                                               : novoEstado == BLOQUEADO  ? "BLOQUEADO"
                                                                          : "FINALIZADO")
