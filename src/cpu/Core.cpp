@@ -80,8 +80,12 @@ void Core::activate(ofstream &outfile)
 
         // Salvar o estado do processo
         pcb->salvarEstado(pipeline.getPipelineState());
-        outfile << "[Núcleo " << this_thread::get_id() << "] Finalizando execução do processo [PID: " << pcb->pid << "].\n";
+        outfile << "[Núcleo " << this_thread::get_id() << "] Encerrando a execução do processo [PID: " << pcb->pid << "].\n";
         outfile << "\nDEPOIS DA EXECUÇÃO";
+        if (pcb->quantumExpirado())
+        {
+            pcb->atualizarEstado(BLOQUEADO, outfile);
+        }
         pcb->exibirPCB(outfile); // Exibe o estado final do PCB
 
         // Gerenciamento de estados
