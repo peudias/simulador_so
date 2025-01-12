@@ -56,7 +56,7 @@ void Core::activate(ofstream &outfile)
 
                 outfile << "[Quantum] Processo " << pcb->pid
                         << " | Restante: " << pcb->quantumRestante
-                        << " | Instruções Restantes: " << instrucoesRestantes << endl;
+                        << " | Tarefas Restantes: " << instrucoesRestantes << endl;
 
                 outfile << "\n[Núcleo " << this_thread::get_id() << "] Processo " << pcb->pid
                         << " executou todas as instruções (PC: " << pcb->PC
