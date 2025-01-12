@@ -9,12 +9,12 @@ PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limit
 void PCB::atualizarEstado(EstadoProcesso novoEstado, ofstream &outfile)
 {
     estado = novoEstado;
-    outfile << endl
-            << "[PCB] Processo " << pid << " alterado para estado: "
-            << (novoEstado == PRONTO ? "PRONTO" : novoEstado == EXECUCAO ? "EXECUCAO"
-                                              : novoEstado == BLOQUEADO  ? "BLOQUEADO"
-                                                                         : "FINALIZADO")
-            << std::endl;
+    outfile
+        << "[PCB] Processo " << pid << " alterado para estado: "
+        << (novoEstado == PRONTO ? "PRONTO" : novoEstado == EXECUCAO ? "EXECUCAO"
+                                          : novoEstado == BLOQUEADO  ? "BLOQUEADO"
+                                                                     : "FINALIZADO")
+        << std::endl;
 }
 
 bool PCB::verificarEstado(EstadoProcesso verEstado) const
@@ -62,8 +62,8 @@ void PCB::decrementarQuantum(ofstream &outfile)
             instrucoesRestantes = 0; // Evitar valores negativos
 
         outfile << "[Quantum] Processo " << pid
-                << " | Restante: " << quantumRestante
-                << " | Instruções Restantes: " << instrucoesRestantes << endl;
+                << " | Instruções Restantes: " << instrucoesRestantes
+                << " | Alocado Restante: " << quantumRestante << endl;
     }
 }
 

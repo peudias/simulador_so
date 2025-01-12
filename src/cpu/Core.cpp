@@ -40,7 +40,7 @@ void Core::activate(ofstream &outfile)
             // Verifica se o quantum expirou
             if (pcb->quantumExpirado())
             {
-                outfile << "Quantum expirado para o processo " << pcb->pid << ". Troca de contexto.\n";
+                outfile << "[Quantum Expirado] Processo " << pcb->pid << " NÃO TERMINOU. Quantum Alocado Insuficitente! Vai para o Fim da Fila!\n\n";
                 pcb->salvarEstado(pipeline.getPipelineState()); // Salva o estado completo
                 break;
             }
@@ -90,11 +90,11 @@ void Core::activate(ofstream &outfile)
         // Salvar o estado do processo
         pcb->salvarEstado(pipeline.getPipelineState());
         outfile << "[Núcleo " << this_thread::get_id() << "] Encerrando a execução do processo [PID: " << pcb->pid << "].\n";
-        outfile << "\nDEPOIS DA EXECUÇÃO";
         if (pcb->quantumExpirado())
         {
             pcb->atualizarEstado(BLOQUEADO, outfile);
         }
+        outfile << "\nDEPOIS DA EXECUÇÃO";
         pcb->exibirPCB(outfile); // Exibe o estado final do PCB
 
         // Gerenciamento de estados
