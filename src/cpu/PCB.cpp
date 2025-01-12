@@ -52,17 +52,19 @@ void PCB::restaurarEstado(std::vector<int> &pipelineState, ofstream &outfile)
     // cout << "Estado completo do processo " << pid << " restaurado do PCB.\n";
 }
 
+int PCB::calcularInstrucoesRestantes() const
+{
+    int instrucoesRestantes = enderecoLimiteInstrucoes - PC + 1;
+    return (instrucoesRestantes < 0) ? 0 : instrucoesRestantes; // Garante que o resultado seja não negativo
+}
+
 void PCB::decrementarQuantum(ofstream &outfile)
 {
     if (quantumRestante > 0)
     {
         quantumRestante--;
-        int instrucoesRestantes = enderecoLimiteInstrucoes - PC + 1;
-        if (instrucoesRestantes < 0)
-            instrucoesRestantes = 0; // Evitar valores negativos
-
         outfile << "[Quantum] Processo " << pid
-                << " | Instruções Restantes: " << instrucoesRestantes
+                << " | Instruções Restantes: " << calcularInstrucoesRestantes()
                 << " | Alocado Restante: " << quantumRestante << endl;
     }
 }

@@ -55,6 +55,7 @@ public:
 
     int getEnderecoBaseInstrucoes() const;
     int getLimiteInstrucoes() const;
+    int calcularInstrucoesRestantes() const;
 
     void setTempoEstimado(int tempo);
 };
