@@ -64,7 +64,7 @@ void PCB::decrementarQuantum(ofstream &outfile)
     {
         quantumRestante--;
         outfile << "[Quantum] Processo " << pid
-                << " | Instruções Restantes: " << calcularInstrucoesRestantes()
+                << " | Tarefas Restantes: " << calcularInstrucoesRestantes()
                 << " | Alocado Restante: " << quantumRestante << endl;
     }
 }
@@ -136,13 +136,13 @@ bool PCB::verificarRecurso(const std::string &nomeRecurso) const
 
 void PCB::exibirPCB(ofstream &outfile) const
 {
-    outfile << "\n=============== [PCB] ===============" << "\n"
+    outfile << "\n=============== [PCB] ==================================================================================================\n"
             << "[PCB] Processo ID: " << pid << "\n"
             << "Estado: " << (estado == PRONTO ? "PRONTO" : estado == EXECUCAO ? "EXECUCAO"
                                                         : estado == BLOQUEADO  ? "BLOQUEADO"
                                                                                : "FINALIZADO")
             << "\n"
-            << "[Quantum] -> Necessário Inicialmente: " << enderecoLimiteInstrucoes - enderecoBaseInstrucoes + 1 << " | Alocado: " << quantumProcesso << " | Disponível: " << quantumRestante << "\n"
+            << "[Quantum] Necessário Inicialmente: " << enderecoLimiteInstrucoes - enderecoBaseInstrucoes + 1 << " | Alocado: " << quantumProcesso << " | Disponível: " << quantumRestante << "\n"
             << "PC: " << PC << "\n";
     //         << "\nRegistradores:\n";
     // registradores.display(outfile);
@@ -174,7 +174,7 @@ void PCB::exibirPCB(ofstream &outfile) const
     outfile << "\nRecursos Associados:\n";
     recursos.exibirPerifericos(outfile);
 
-    outfile << "\n===============================\n";
+    outfile << "\n========================================================================================================================\n";
 }
 
 int PCB::getEnderecoBaseInstrucoes() const

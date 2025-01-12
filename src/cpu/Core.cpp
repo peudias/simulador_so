@@ -31,7 +31,7 @@ void Core::activate(ofstream &outfile)
 
         pcb->atualizarEstado(EXECUCAO, outfile);
         outfile << "[Núcleo " << this_thread::get_id() << "] Iniciando execução do processo [PID: " << pcb->pid << "]\n";
-        outfile << "\nANTES DA EXECUÇÃO";
+        outfile << "\n=============== [PCB PRÉ-EXECUÇÃO]:";
         pcb->exibirPCB(outfile); // Imprime o estado inicial do PCB
 
         // Loop principal de execução de processo
@@ -55,8 +55,8 @@ void Core::activate(ofstream &outfile)
                     instrucoesRestantes = 0;
 
                 outfile << "[Quantum] Processo " << pcb->pid
-                        << " | Restante: " << pcb->quantumRestante
-                        << " | Tarefas Restantes: " << instrucoesRestantes << endl;
+                        << " | Tarefas Restantes: " << pcb->calcularInstrucoesRestantes()
+                        << " | Alocado Restante: " << pcb->quantumRestante << endl;
 
                 outfile << "\n[Núcleo " << this_thread::get_id() << "] Processo " << pcb->pid
                         << " executou todas as instruções (PC: " << pcb->PC
@@ -94,13 +94,14 @@ void Core::activate(ofstream &outfile)
         {
             pcb->atualizarEstado(BLOQUEADO, outfile);
         }
-        outfile << "\nDEPOIS DA EXECUÇÃO";
+
+        outfile << "\n=============== [PCB PÓS-EXECUÇÃO]:";
         pcb->exibirPCB(outfile); // Exibe o estado final do PCB
 
         // Gerenciamento de estados
         if (pcb->verificarEstado(FINALIZADO))
         {
-            outfile << "[Núcleo " << this_thread::get_id() << "] Processo [PID: " << pcb->pid << "] finalizado.\n";
+            outfile << "[Núcleo " << this_thread::get_id() << "] Processo [PID: " << pcb->pid << "] FINALIZADO.\n";
             outfile << "************************************************************************************************************************\n";
         }
         else if (pcb->quantumExpirado())
