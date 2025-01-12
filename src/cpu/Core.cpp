@@ -53,7 +53,7 @@ void Core::activate(ofstream &outfile)
                         << ", Base: " << pcb->getEnderecoBaseInstrucoes()
                         << ", Limite: " << pcb->getLimiteInstrucoes()
                         << ")\n";
-                outfile << "Finalizando...\n\n";
+                // outfile << "Finalizando...\n\n";
                 pcb->atualizarEstado(FINALIZADO, outfile);
                 break;
             }

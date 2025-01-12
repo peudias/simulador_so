@@ -57,7 +57,7 @@ void PCB::decrementarQuantum(ofstream &outfile)
     if (quantumRestante > 0)
     {
         quantumRestante--;
-        outfile << "[Quantum] Processo " << pid << ", Quantum restante: " << quantumRestante << endl;
+        outfile << "[Quantum] Processo " << pid << " | Restante: " << quantumRestante << endl;
     }
 }
 
@@ -134,10 +134,10 @@ void PCB::exibirPCB(ofstream &outfile) const
                                                         : estado == BLOQUEADO  ? "BLOQUEADO"
                                                                                : "FINALIZADO")
             << "\n"
-            << "Quantum Necessário: " << memoriaAlocada[1] - memoriaAlocada[0] + 1 << ", Quantum Inicial: " << quantumProcesso << ", Quantum Atual: " << quantumRestante << "\n"
-            << "PC: " << PC << "\n"
-            << "\nRegistradores:\n";
-    registradores.display(outfile);
+            << "[Quantum] -> Necessário Inicialmente: " << enderecoLimiteInstrucoes - enderecoBaseInstrucoes + 1 << " | Alocado: " << quantumProcesso << " | Disponível: " << quantumRestante << "\n"
+            << "PC: " << PC << "\n";
+    //         << "\nRegistradores:\n";
+    // registradores.display(outfile);
 
     outfile << "\nMemória Alocada:\n";
     if (!memoriaAlocada.empty())
