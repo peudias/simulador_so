@@ -57,7 +57,13 @@ void PCB::decrementarQuantum(ofstream &outfile)
     if (quantumRestante > 0)
     {
         quantumRestante--;
-        outfile << "[Quantum] Processo " << pid << " | Restante: " << quantumRestante << endl;
+        int instrucoesRestantes = enderecoLimiteInstrucoes - PC + 1;
+        if (instrucoesRestantes < 0)
+            instrucoesRestantes = 0; // Evitar valores negativos
+
+        outfile << "[Quantum] Processo " << pid
+                << " | Restante: " << quantumRestante
+                << " | Instruções Restantes: " << instrucoesRestantes << endl;
     }
 }
 
