@@ -13,7 +13,7 @@ void Escalonador::adicionarProcesso(PCB *processo, ofstream &outfile)
 {
     lock_guard<mutex> lock(mtx);
     filaProntos.push(processo);
-    outfile << "[Escalonador] Processo " << processo->pid << " adicionado à fila de prontos.\n";
+    outfile << "[Escalonador] Processo " << processo->pid << " adicionado à Fila de PRONTOS" << endl;
 }
 
 PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
@@ -22,7 +22,7 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
 
     if (filaVazia())
     {
-        outfile << "[Escalonador] Nenhum processo disponível na fila de prontos." << endl;
+        outfile << "[Escalonador] Nenhum processo disponível na fila de PRONTOS" << endl;
         return nullptr;
     }
 
@@ -69,7 +69,7 @@ void Escalonador::desbloquearProcessos(ofstream &outfile)
         filaBloqueados.pop();
         processo->atualizarEstado(PRONTO, outfile);
         filaProntos.push(processo);
-        outfile << "[Escalonador] Processo " << processo->pid << " desbloqueado e movido para a fila de prontos.\n";
+        outfile << "[Escalonador] Processo " << processo->pid << " Desbloqueado e Movido para a Fila de PRONTOS" << endl;
     }
 }
 

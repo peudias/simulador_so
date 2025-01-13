@@ -117,7 +117,7 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
             {
                 string recursoNecessario = "impressora";       // Recurso necessário
                 pcb->associarRecurso(recursoNecessario, true); // Aloca o recurso
-                globalLog << "[Bootloader] Recurso " << recursoNecessario << " alocado ao processo " << pcb->pid << ".\n";
+                globalLog << "[Bootloader] Recurso " << recursoNecessario << " alocado ao Processo " << pcb->pid << ".\n";
             }
         }
 

@@ -21,7 +21,7 @@ void Core::activate(ofstream &outfile)
 
         if (pcb == nullptr)
         {
-            outfile << "[Núcleo " << this_thread::get_id() << "] Erro: Nenhum processo disponível para execução.\n";
+            outfile << "[Núcleo " << this_thread::get_id() << "] Erro: Nenhum Processo disponível para execução.\n";
             return;
         }
 
@@ -30,7 +30,7 @@ void Core::activate(ofstream &outfile)
         pcb->restaurarEstado(pipelineState, outfile);
 
         pcb->atualizarEstado(EXECUCAO, outfile);
-        outfile << "[Núcleo " << this_thread::get_id() << "] Iniciando execução do processo [PID: " << pcb->pid << "]\n";
+        outfile << "[Núcleo " << this_thread::get_id() << "] Iniciando execução do Processo [PID: " << pcb->pid << "]\n";
         outfile << "\n=============== [PCB PRÉ-EXECUÇÃO]:";
         pcb->exibirPCB(outfile); // Imprime o estado inicial do PCB
 
@@ -89,14 +89,7 @@ void Core::activate(ofstream &outfile)
 
         // Salvar o estado do processo
         pcb->salvarEstado(pipeline.getPipelineState());
-        outfile << "[Núcleo " << this_thread::get_id() << "] Encerrando a execução do processo [PID: " << pcb->pid << "].\n";
-        if (pcb->quantumExpirado())
-        {
-            pcb->atualizarEstado(BLOQUEADO, outfile);
-        }
-
-        outfile << "\n=============== [PCB PÓS-EXECUÇÃO]:";
-        pcb->exibirPCB(outfile); // Exibe o estado final do PCB
+        outfile << "[Núcleo " << this_thread::get_id() << "] Encerrando a execução do Processo [PID: " << pcb->pid << "]\n";
 
         // Gerenciamento de estados
         if (pcb->verificarEstado(FINALIZADO))
@@ -107,10 +100,12 @@ void Core::activate(ofstream &outfile)
         else if (pcb->quantumExpirado())
         {
             pcb->resetarQuantum(outfile);
+            outfile << "=============== [PCB PÓS-EXECUÇÃO]:";
+            pcb->exibirPCB(outfile); // Exibe PCB novamente
+            outfile << "[Núcleo " << this_thread::get_id() << "] Quantum expirado para o Processo [PID: " << pcb->pid << "]" << endl;
+            outfile << "Após ter seu Quantum reiniciado para [ " << pcb->quantumProcesso << " ] retorna à fila de PRONTOS" << endl;
             pcb->atualizarEstado(PRONTO, outfile);
             escalonador.adicionarProcesso(pcb, outfile);
-            outfile << "[Núcleo " << this_thread::get_id() << "] Quantum expirado para o processo [PID: " << pcb->pid
-                    << "]. Retornando à fila de prontos.\n";
         }
         else if (pcb->verificarEstado(BLOQUEADO))
         {
@@ -177,7 +172,7 @@ void Core::validateMemoryAccess(PCB *processo, int endereco, ofstream &outfile)
 {
     if (!processo->verificarAcessoMemoria(endereco) || ram.isReserved(endereco))
     {
-        outfile << "[Erro] Acesso inválido à memória no endereço " << endereco << " pelo processo " << processo->pid << "\n";
+        outfile << "[Erro] Acesso inválido à memória no endereço " << endereco << " pelo Processo " << processo->pid << "\n";
         processo->atualizarEstado(BLOQUEADO, outfile); // Bloqueia o processo caso o acesso seja inválido
     }
 }

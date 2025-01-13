@@ -36,7 +36,7 @@ Instruction Pipeline::InstructionFetch(RAM &ram, int endereco, PCB *pcb)
     if (endereco < pcb->getEnderecoBaseInstrucoes() || endereco > pcb->getLimiteInstrucoes())
     {
         cerr << "Erro: Acesso inválido à memória no endereço " << endereco
-             << " pelo processo " << pcb->pid
+             << " pelo Processo " << pcb->pid
              << " (Base: " << pcb->getEnderecoBaseInstrucoes()
              << ", Limite: " << pcb->getLimiteInstrucoes() << ")\n";
         return Instruction(ADD, 0, 0, 0); // Instrução "neutra" ou de erro

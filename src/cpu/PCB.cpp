@@ -10,7 +10,7 @@ void PCB::atualizarEstado(EstadoProcesso novoEstado, ofstream &outfile)
 {
     estado = novoEstado;
     outfile
-        << "[PCB] Processo " << pid << " alterado para estado: "
+        << "\n[PCB] Processo " << pid << " alterado para estado: "
         << (novoEstado == PRONTO ? "PRONTO" : novoEstado == EXECUCAO ? "EXECUCAO"
                                           : novoEstado == BLOQUEADO  ? "BLOQUEADO"
                                                                      : "FINALIZADO")
@@ -78,7 +78,8 @@ void PCB::resetarQuantum(ofstream &outfile)
 {
     quantumRestante = quantumProcesso;
     atualizarEstado(BLOQUEADO, outfile);
-    outfile << "[Preempção] Quantum do processo " << pid << " foi reiniciado para " << quantumProcesso << "\n";
+    outfile << "[Preempção] QUANTUM do Processo " << pid << " reiniciado para [ " << quantumProcesso << " ]\n"
+            << endl;
 }
 
 // Gerenciamento de memoria

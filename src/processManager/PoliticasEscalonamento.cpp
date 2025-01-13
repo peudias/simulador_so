@@ -5,7 +5,7 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoFCFS(queue<PCB *> &filaPro
     PCB *processo = filaProntos.front();
     filaProntos.pop();
     outfile << "\n************************************************************************************************************************\n";
-    outfile << "[Escalonador][FCFS] Retirando o processo " << processo->pid << " da fila de prontos.\n";
+    outfile << "[Escalonador][FCFS] Retirando o processo " << processo->pid << " da fila de PRONTOS" << endl;
     return processo;
 }
 
@@ -35,7 +35,7 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoSJF(queue<PCB *> &filaPron
     }
 
     outfile << "\n************************************************************************************************************************\n";
-    outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de prontos. Quantum: " << processoMenorTempo->quantumProcesso << ".\n";
+    outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de PRONTOS. Quantum: " << processoMenorTempo->quantumProcesso << ".\n";
 
     return processoMenorTempo;
 }
@@ -67,7 +67,7 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(queue<PCB *> &f
 
     outfile << "\n************************************************************************************************************************\n";
     outfile << "[Escalonador][Prioridade] Retirando o processo " << processoMaiorPrioridade->pid
-            << " da fila de prontos. Prioridade [Nível " << processoMaiorPrioridade->prioridade << "][";
+            << " da fila de PRONTOS. Prioridade [Nível " << processoMaiorPrioridade->prioridade << "][";
     for (int j = 0; j < processoMaiorPrioridade->prioridade; ++j)
     {
         outfile << "★";
