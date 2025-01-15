@@ -19,6 +19,7 @@
 A arquitetura do projeto foi idealizada com base no modelo conceitual acima, que representa os principais componentes e interações do simulador. Esse modelo serviu como referência para o desenvolvimento, mas a implementação final foi projetada de forma flexível, permitindo ajustes futuros para atender a requisitos práticos, aprimorar a eficiência e incorporar boas práticas de design.
 
 Este projeto implementa um simulador da Arquitetura de Von Neumann com suporte a múltiplos núcleos, escalonamento e gerenciamento de recursos, utilizando um pipeline MIPS de 5 estágios (IF, ID, EX, MEM, WB). O simulador foi desenvolvido como parte do estudo de Sistemas Operacionais e visa explorar conceitos como execução paralela, escalonamento de processos e otimização de recursos.
+
 </div>
 
 ## 🗂️ Estrutura do Projeto
@@ -26,10 +27,7 @@ Este projeto implementa um simulador da Arquitetura de Von Neumann com suporte a
 <div align="justify">
 
 - `src/`: Diretório com os scripts C++ usados para gerar os outputs e realizar as análises.
-- `docs/`: Diretório contendo as Instruções do trabalho e o Artigo de análise em PDF.
-- `instructionsN.txt/ `: Contém as instruções a serem simuladas, onde cada arquivo representa um processo específico.
-- `setRegisters.txt/`: Define os valores iniciais dos registradores.
-- `configBootloader.txt/`: Configura os parâmetros de execução, como número de núcleos, diretório de logs e quantum dos processos.
+- `docs/`: Diretório contendo os Artigos Parciais dos módulos do trabalho em PDF.
 
 </div>
 
