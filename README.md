@@ -9,7 +9,7 @@
 ## 🗃️ Arquitetura do Projeto
 
 <p align="center">
-<img src="docs/imgs/image.png" width="700"/> 
+<img src="imgs/arquitetura2.png" width="600"/> 
 </p>
 <p align="center">
 <em>Figura 1: Diagrama representativo da arquitetura do simulador.</em>
