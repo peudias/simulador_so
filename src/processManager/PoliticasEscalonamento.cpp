@@ -20,7 +20,7 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoSJF(queue<PCB *> &filaPron
         filaProntos.pop();
         tempoQueue.push_back(atual);
 
-        if (!processoMenorTempo || atual->quantumProcesso < processoMenorTempo->quantumProcesso)
+        if (!processoMenorTempo || atual->tempoEstimado < processoMenorTempo->tempoEstimado)
         {
             processoMenorTempo = atual;
         }
@@ -35,7 +35,7 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoSJF(queue<PCB *> &filaPron
     }
 
     outfile << "\n************************************************************************************************************************\n";
-    outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de PRONTOS. Quantum: " << processoMenorTempo->quantumProcesso << ".\n";
+    outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de PRONTOS. Tamanho: " << processoMenorTempo->tempoEstimado << ".\n";
 
     return processoMenorTempo;
 }

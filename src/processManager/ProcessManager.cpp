@@ -33,7 +33,7 @@ vector<PCB *> ProcessManager::createPCBs(Disco &disco, RAM &ram, Registers &regs
         int quantumRandom = distrib(gen);
 
         // Define o quantum com base no número de instruções e endereço base
-        int tempoEstimado = quantumRandom;
+        int tempoEstimado = quantidadeInstrucoes;
 
         // Configurando prioridade aleatória (POLÍTICA: Prioridade)
         int prioridade = prioridades[i];
