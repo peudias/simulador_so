@@ -2,10 +2,28 @@
 
 PCB *PoliticasEscalonamentoHandler::selecionarProcessoFCFS(queue<PCB *> &filaProntos, ofstream &outfile)
 {
+    static int tempoAtualFCFS = 0;
+    static double tempoTotalEsperaFCFS = 0;
+    static double tempoTotalRetornoFCFS = 0;
+    static int processosExecutadosFCFS = 0;
+
     PCB *processo = filaProntos.front();
     filaProntos.pop();
+
+    int tempoEsperaFCFS = tempoAtualFCFS;
+    int tempoRetornoFCFS = tempoEsperaFCFS + processo->tempoEstimado;
+
+    tempoTotalEsperaFCFS += tempoEsperaFCFS;
+    tempoTotalRetornoFCFS += tempoRetornoFCFS;
+    tempoAtualFCFS += processo->tempoEstimado;
+    processosExecutadosFCFS++;
+
     outfile << "\n************************************************************************************************************************\n";
-    outfile << "[Escalonador][FCFS] Retirando o processo " << processo->pid << " da fila de PRONTOS" << endl;
+    outfile << "[Escalonador][FCFS] Retirando o processo " << processo->pid << " da fila de PRONTOS. Tamanho: " << processo->tempoEstimado << ".\n";
+    outfile << "Tempo de espera: " << tempoEsperaFCFS << " | Tempo de retorno: " << tempoRetornoFCFS << ".\n";
+    outfile << "[Escalonador][FCFS] Tempo médio de espera: " << (tempoTotalEsperaFCFS / processosExecutadosFCFS)
+            << " | Tempo médio de retorno: " << (tempoTotalRetornoFCFS / processosExecutadosFCFS) << ".\n";
+
     return processo;
 }
 
@@ -13,6 +31,10 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoSJF(queue<PCB *> &filaPron
 {
     vector<PCB *> tempoQueue;
     PCB *processoMenorTempo = nullptr;
+    static int tempoAtual = 0;
+    static double tempoTotalEspera = 0;
+    static double tempoTotalRetorno = 0;
+    static int processosExecutados = 0;
 
     while (!filaProntos.empty())
     {
@@ -34,8 +56,21 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoSJF(queue<PCB *> &filaPron
         }
     }
 
+    int tempoEspera = tempoAtual;
+    int tempoRetorno = tempoEspera + processoMenorTempo->tempoEstimado;
+
+    tempoTotalEspera += tempoEspera;
+    tempoTotalRetorno += tempoRetorno;
+
+    tempoAtual += processoMenorTempo->tempoEstimado;
+    processosExecutados++;
+
     outfile << "\n************************************************************************************************************************\n";
-    outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid << " da fila de PRONTOS. Tamanho: " << processoMenorTempo->tempoEstimado << ".\n";
+    outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid
+            << " da fila de PRONTOS. Tamanho: " << processoMenorTempo->tempoEstimado << ".\n";
+    outfile << "Tempo de espera: " << tempoEspera << " | Tempo de retorno: " << tempoRetorno << ".\n";
+    outfile << "[Escalonador][SJF] Tempo médio de espera: " << (tempoTotalEspera / processosExecutados)
+            << " | Tempo médio de retorno: " << (tempoTotalRetorno / processosExecutados) << ".\n";
 
     return processoMenorTempo;
 }
