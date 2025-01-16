@@ -79,6 +79,10 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(queue<PCB *> &f
 {
     vector<PCB *> prioridadeQueue;
     PCB *processoMaiorPrioridade = nullptr;
+    static int tempoAtualPrioridade = 0;
+    static double tempoTotalEsperaPrioridade = 0;
+    static double tempoTotalRetornoPrioridade = 0;
+    static int processosExecutadosPrioridade = 0;
 
     while (!filaProntos.empty())
     {
@@ -100,6 +104,14 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(queue<PCB *> &f
         }
     }
 
+    int tempoEsperaPrioridade = tempoAtualPrioridade;
+    int tempoRetornoPrioridade = tempoEsperaPrioridade + processoMaiorPrioridade->tempoEstimado;
+
+    tempoTotalEsperaPrioridade += tempoEsperaPrioridade;
+    tempoTotalRetornoPrioridade += tempoRetornoPrioridade;
+    tempoAtualPrioridade += processoMaiorPrioridade->tempoEstimado;
+    processosExecutadosPrioridade++;
+
     outfile << "\n************************************************************************************************************************\n";
     outfile << "[Escalonador][Prioridade] Retirando o processo " << processoMaiorPrioridade->pid
             << " da fila de PRONTOS. Prioridade [Nível " << processoMaiorPrioridade->prioridade << "][";
@@ -108,6 +120,9 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(queue<PCB *> &f
         outfile << "★";
     }
     outfile << "]\n";
+    outfile << "Tempo de espera: " << tempoEsperaPrioridade << " | Tempo de retorno: " << tempoRetornoPrioridade << ".\n";
+    outfile << "[Escalonador][Prioridade] Tempo médio de espera: " << (tempoTotalEsperaPrioridade / processosExecutadosPrioridade)
+            << " | Tempo médio de retorno: " << (tempoTotalRetornoPrioridade / processosExecutadosPrioridade) << ".\n";
 
     return processoMaiorPrioridade;
 }
