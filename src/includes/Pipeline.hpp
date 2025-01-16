@@ -1,8 +1,8 @@
 #ifndef PIPELINE_HPP
 #define PIPELINE_HPP
 
+#include "enums/OpcodeEnum.hpp"
 #include "Disco.hpp"
-#include "Opcode.hpp"
 #include "Instruction.hpp"
 #include "Registers.hpp"
 #include "ULA.hpp"

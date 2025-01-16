@@ -2,17 +2,19 @@
 #include <iostream>
 #include <iomanip>
 
-PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limite)
-    : pid(id), estado(PRONTO), PC(0), quantumProcesso(quantum), quantumRestante(quantum), registradores(regs), enderecoBaseInstrucoes(enderecoBase), enderecoLimiteInstrucoes(limite) {}
+PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limite, int tempoEstimado, int prioridade)
+    : pid(id), estado(PRONTO), PC(0), quantumProcesso(quantum), quantumRestante(quantum),
+      registradores(regs), enderecoBaseInstrucoes(enderecoBase), enderecoLimiteInstrucoes(limite), tempoEstimado(tempoEstimado), prioridade(prioridade) {}
 
 void PCB::atualizarEstado(EstadoProcesso novoEstado, ofstream &outfile)
 {
     estado = novoEstado;
-    outfile << "[PCB] Processo " << pid << " alterado para estado: "
-            << (novoEstado == PRONTO ? "PRONTO" : novoEstado == EXECUCAO ? "EXECUCAO"
-                                              : novoEstado == BLOQUEADO  ? "BLOQUEADO"
-                                                                         : "FINALIZADO")
-            << std::endl;
+    outfile
+        << "\n[PCB] Processo " << pid << " alterado para estado: "
+        << (novoEstado == PRONTO ? "PRONTO" : novoEstado == EXECUCAO ? "EXECUCAO"
+                                          : novoEstado == BLOQUEADO  ? "BLOQUEADO"
+                                                                     : "FINALIZADO")
+        << std::endl;
 }
 
 bool PCB::verificarEstado(EstadoProcesso verEstado) const
@@ -50,12 +52,20 @@ void PCB::restaurarEstado(std::vector<int> &pipelineState, ofstream &outfile)
     // cout << "Estado completo do processo " << pid << " restaurado do PCB.\n";
 }
 
+int PCB::calcularInstrucoesRestantes() const
+{
+    int instrucoesRestantes = enderecoLimiteInstrucoes - PC + 1;
+    return (instrucoesRestantes < 0) ? 0 : instrucoesRestantes; // Garante que o resultado seja não negativo
+}
+
 void PCB::decrementarQuantum(ofstream &outfile)
 {
     if (quantumRestante > 0)
     {
         quantumRestante--;
-        outfile << "[Quantum] Processo " << pid << ", Quantum restante: " << quantumRestante << endl;
+        outfile << "[Quantum] Processo " << pid
+                << " | Tarefas Restantes: " << calcularInstrucoesRestantes()
+                << " | Alocado Restante: " << quantumRestante << endl;
     }
 }
 
@@ -68,7 +78,8 @@ void PCB::resetarQuantum(ofstream &outfile)
 {
     quantumRestante = quantumProcesso;
     atualizarEstado(BLOQUEADO, outfile);
-    outfile << "[Preempção] Quantum do processo " << pid << " foi reiniciado para " << quantumProcesso << "\n";
+    outfile << "[Preempção] QUANTUM do Processo " << pid << " reiniciado para [ " << quantumProcesso << " ]\n"
+            << endl;
 }
 
 // Gerenciamento de memoria
@@ -126,16 +137,16 @@ bool PCB::verificarRecurso(const std::string &nomeRecurso) const
 
 void PCB::exibirPCB(ofstream &outfile) const
 {
-    outfile << "\n=============== [PCB] ===============" << "\n"
+    outfile << "\n=============== [PCB] ==================================================================================================\n"
             << "[PCB] Processo ID: " << pid << "\n"
             << "Estado: " << (estado == PRONTO ? "PRONTO" : estado == EXECUCAO ? "EXECUCAO"
                                                         : estado == BLOQUEADO  ? "BLOQUEADO"
                                                                                : "FINALIZADO")
             << "\n"
-            << "Quantum Total: " << quantumProcesso << ", Quantum Restante: " << quantumRestante << "\n"
-            << "PC: " << PC << "\n"
-            << "\nRegistradores:\n";
-    registradores.display(outfile);
+            << "[Quantum] Tarefas Inicialmente: " << enderecoLimiteInstrucoes - enderecoBaseInstrucoes + 1 << " | Tarefas Restantes: " << calcularInstrucoesRestantes() << " | Alocado: " << quantumProcesso << " | Disponível: " << quantumRestante << "\n"
+            << "PC: " << PC << "\n";
+    //         << "\nRegistradores:\n";
+    // registradores.display(outfile);
 
     outfile << "\nMemória Alocada:\n";
     if (!memoriaAlocada.empty())
@@ -164,7 +175,7 @@ void PCB::exibirPCB(ofstream &outfile) const
     outfile << "\nRecursos Associados:\n";
     recursos.exibirPerifericos(outfile);
 
-    outfile << "\n===============================\n";
+    outfile << "\n========================================================================================================================\n";
 }
 
 int PCB::getEnderecoBaseInstrucoes() const
@@ -175,4 +186,9 @@ int PCB::getEnderecoBaseInstrucoes() const
 int PCB::getLimiteInstrucoes() const
 {
     return enderecoLimiteInstrucoes;
+}
+
+void PCB::setTempoEstimado(int tempo)
+{
+    tempoEstimado = tempo;
 }

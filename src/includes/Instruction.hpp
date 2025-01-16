@@ -1,7 +1,7 @@
 #ifndef INSTRUCTION_HPP
 #define INSTRUCTION_HPP
 
-#include "Opcode.hpp"
+#include "enums/OpcodeEnum.hpp"
 #include <ostream>
 
 struct Instruction

@@ -4,41 +4,41 @@ RAM::RAM() : memoria(tamanho, 0), instruction_memory(tamanho) {}
 
 void RAM::write(int endereco, int valor)
 {
-    std::lock_guard<std::mutex> lock(mtx); // Bloqueia o mutex enquanto a função é executada
+    lock_guard<mutex> lock(mtx); // Bloqueia o mutex enquanto a função é executada
     if (endereco >= 0 && endereco < tamanho)
     {
         memoria[endereco] = valor;
     }
     else
     {
-        std::cout << "Erro: Endereço fora da memória!" << std::endl;
+        cout << "Erro: Endereço fora da memória!" << endl;
     }
 }
 
 int RAM::read(int endereco)
 {
-    std::lock_guard<std::mutex> lock(mtx); // Bloqueia o mutex enquanto a função é executada
+    lock_guard<mutex> lock(mtx); // Bloqueia o mutex enquanto a função é executada
     if (endereco >= 0 && endereco < tamanho)
     {
         return memoria[endereco];
     }
     else
     {
-        std::cout << "Erro: Endereço fora da memória!" << std::endl;
+        cout << "Erro: Endereço fora da memória!" << endl;
         return -1;
     }
 }
 
 void RAM::writeInstruction(int endereco, const Instruction &instr)
 {
-    std::lock_guard<std::mutex> lock(mtx); // Bloqueia o mutex enquanto a função é executada
+    lock_guard<mutex> lock(mtx); // Bloqueia o mutex enquanto a função é executada
     if (endereco >= 0 && endereco < tamanho)
     {
         instruction_memory[endereco] = instr;
     }
     else
     {
-        std::cout << "Erro: Endereço inválido para instrução na RAM " << endereco << std::endl;
+        cout << "Erro: Endereço inválido para instrução na RAM " << endereco << endl;
     }
 }
 
@@ -48,7 +48,7 @@ Instruction RAM::fetchInstruction(int endereco) const
     {
         return instruction_memory[endereco];
     }
-    std::cout << "Erro: Endereço inválido para instrução na RAM " << endereco << std::endl;
+    cout << "Erro: Endereço inválido para instrução na RAM " << endereco << endl;
     return Instruction(ADD, 0, 0, 0);
 }
 
@@ -73,6 +73,6 @@ void RAM::displayI() const
 {
     for (int i = 0; i < tamanho; i++)
     {
-        std::cout << "Endereço " << i << " -> " << instruction_memory[i] << std::endl;
+        cout << "Endereço " << i << " -> " << instruction_memory[i] << endl;
     }
 }

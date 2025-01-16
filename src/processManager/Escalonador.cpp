@@ -1,27 +1,55 @@
 #include "../includes/Escalonador.hpp"
 
-Escalonador::Escalonador() {}
+Escalonador::Escalonador(PoliticasEscalonamento politica)
+    : politicaAtual(politica) {}
 
-PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
+void Escalonador::configurarPolitica(PoliticasEscalonamento novaPolitica)
 {
     lock_guard<mutex> lock(mtx);
-    if (!filaVazia())
-    {
-        PCB *processo = filaProntos.front();
-        filaProntos.pop();
-        outfile << "\n************************************************************************************************************************\n";
-        outfile << "[Escalonador] Retirando o processo " << processo->pid << " da fila de prontos.\n";
-        return processo;
-    }
-    outfile << "[Escalonador] Nenhum processo disponível na fila de prontos.\n";
-    return nullptr;
+    politicaAtual = novaPolitica;
 }
 
 void Escalonador::adicionarProcesso(PCB *processo, ofstream &outfile)
 {
     lock_guard<mutex> lock(mtx);
     filaProntos.push(processo);
-    outfile << "[Escalonador] Processo " << processo->pid << " adicionado à fila de prontos.\n";
+    outfile << "[Escalonador] Processo " << processo->pid << " adicionado à Fila de PRONTOS" << endl;
+}
+
+PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
+{
+    lock_guard<mutex> lock(mtx);
+
+    if (filaVazia())
+    {
+        outfile << "[Escalonador] Nenhum processo disponível na fila de PRONTOS" << endl;
+        return nullptr;
+    }
+
+    PCB *processoSelecionado = nullptr;
+
+    switch (politicaAtual)
+    {
+    case PoliticasEscalonamento::FCFS:
+        processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoFCFS(filaProntos, outfile);
+        break;
+    case PoliticasEscalonamento::SJF:
+        processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoSJF(filaProntos, outfile);
+        break;
+    case PoliticasEscalonamento::PRIORIDADE:
+        processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(filaProntos, outfile);
+        break;
+    case PoliticasEscalonamento::ROUNDROBIN:
+        processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoRoundRobin(filaProntos, outfile);
+        break;
+    }
+
+    if (!processoSelecionado)
+    {
+        outfile << "[Escalonador] Nenhum processo válido encontrado.\n";
+    }
+
+    return processoSelecionado;
 }
 
 void Escalonador::bloquearProcesso(PCB *processo, ofstream &outfile)
@@ -41,7 +69,7 @@ void Escalonador::desbloquearProcessos(ofstream &outfile)
         filaBloqueados.pop();
         processo->atualizarEstado(PRONTO, outfile);
         filaProntos.push(processo);
-        outfile << "[Escalonador] Processo " << processo->pid << " desbloqueado e movido para a fila de prontos.\n";
+        outfile << "[Escalonador] Processo " << processo->pid << " Desbloqueado e Movido para a Fila de PRONTOS" << endl;
     }
 }
 

@@ -7,15 +7,17 @@
 #include "InstructionDecode.hpp"
 #include <mutex>
 
+using namespace std;
+
 class RAM
 {
 private:
-    std::mutex mtx;
+    mutex mtx;
 
 public:
-    std::vector<int> memoria;
-    std::vector<Instruction> instruction_memory;
-    static const int tamanho = 32;
+    vector<int> memoria;
+    vector<Instruction> instruction_memory;
+    static const int tamanho = 256;
 
     RAM();
 

@@ -5,6 +5,7 @@ string Bootloader::OUTPUT_LOGS_DIR = "";
 int Bootloader::NUM_NUCLEOS = 0;
 int Bootloader::QUANTUM_PROCESS_MIN = 0;
 int Bootloader::QUANTUM_PROCESS_MAX = 0;
+PoliticasEscalonamento Bootloader::POLITICA_ESCALONAMENTO = PoliticasEscalonamento::FCFS;
 
 void Bootloader::loadConfigBootloader(const string &file)
 {
@@ -32,7 +33,8 @@ void Bootloader::loadConfigBootloader(const string &file)
     inputFile.close();
 
     if (configs.find("NUM_NUCLEOS") == configs.end() || configs.find("OUTPUT_LOGS_DIR") == configs.end() ||
-        configs.find("QUANTUM_PROCESS_MIN") == configs.end() || configs.find("QUANTUM_PROCESS_MAX") == configs.end())
+        configs.find("QUANTUM_PROCESS_MIN") == configs.end() || configs.find("QUANTUM_PROCESS_MAX") == configs.end() ||
+        configs.find("POLITICA_ESCALONAMENTO") == configs.end())
     {
         cerr << "Arquivo de configuração ('data/configBootloader.txt') inválido: chaves necessárias estão faltando ou definidas incorretamente." << endl;
         exit(EXIT_FAILURE);
@@ -43,9 +45,21 @@ void Bootloader::loadConfigBootloader(const string &file)
     QUANTUM_PROCESS_MIN = stoi(configs["QUANTUM_PROCESS_MIN"]);
     QUANTUM_PROCESS_MAX = stoi(configs["QUANTUM_PROCESS_MAX"]);
 
-    if (NUM_NUCLEOS <= 0 || QUANTUM_PROCESS_MIN <= 0 || QUANTUM_PROCESS_MAX <= 0)
+    // Mapeando a política de escalonamento
+    unordered_map<string, PoliticasEscalonamento> politicaMap = {
+        {"FCFS", PoliticasEscalonamento::FCFS},
+        {"SJF", PoliticasEscalonamento::SJF},
+        {"PRIORIDADE", PoliticasEscalonamento::PRIORIDADE},
+        {"ROUNDROBIN", PoliticasEscalonamento::ROUNDROBIN}};
+
+    string politicaStr = configs["POLITICA_ESCALONAMENTO"];
+    if (politicaMap.find(politicaStr) != politicaMap.end())
     {
-        cerr << "Configuração inválida: valores numéricos devem ser maiores que zero." << endl;
+        POLITICA_ESCALONAMENTO = politicaMap[politicaStr];
+    }
+    else
+    {
+        cerr << "Política de escalonamento inválida: " << politicaStr << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -75,17 +89,39 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
     // Alocação de memória para cada processo && Adicionando os processos ao escalonador
     for (auto &pcb : pcbs)
     {
-        int enderecoBase = pcb->getEnderecoBaseInstrucoes(); // Exemplo: faixas de memória de 5 endereços por processo
+        int enderecoBase = pcb->getEnderecoBaseInstrucoes();
         int limite = pcb->getLimiteInstrucoes();
 
         pcb->alocarMemoria(ram, enderecoBase, limite);
+
+        if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF)
+        {
+            globalLog << endl
+                      << "[Bootloader][SJF] Processo " << pcb->pid << " com tamanho de " << pcb->tempoEstimado << "." << endl;
+        }
+
+        if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::PRIORIDADE)
+        {
+            globalLog << "[Bootloader][Prioridade] Processo " << pcb->pid << " configurado com prioridade: [Nível " << pcb->prioridade << "][";
+            for (int j = 0; j < pcb->prioridade; ++j)
+            {
+                globalLog << "★";
+            }
+            globalLog << "]" << endl;
+        }
+
+        if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::ROUNDROBIN)
+        {
+            globalLog << endl
+                      << "[Bootloader][RoundRobin] Processo " << pcb->pid << " preparado com quantum inicial: " << pcb->quantumRestante << " ms." << endl;
+        }
 
         // Associar recurso apenas ao processo com PID = 2
         if (pcb->pid == 2)
         {
             string recursoNecessario = "impressora";       // Recurso necessário
             pcb->associarRecurso(recursoNecessario, true); // Aloca o recurso
-            globalLog << "[Bootloader] Recurso " << recursoNecessario << " alocado ao processo " << pcb->pid << ".\n";
+            globalLog << "[Bootloader] Recurso " << recursoNecessario << " alocado ao Processo " << pcb->pid << ".\n";
         }
 
         escalonador.adicionarProcesso(pcb, globalLog);
@@ -116,13 +152,30 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
         return;
     }
 
-    globalLog << "Inicializando o sistema...\n";
+    globalLog << "Inicializando o sistema..." << endl;
 
     // Configurando os registradores
     disco.setRegistersFromFile(regs, "data/setRegisters.txt");
 
     // Lista de arquivos de instrução
     vector<string> arquivosInstrucoes = disco.listInstructionsFile("data/instr");
+
+    // Log para Estado Inical do SO
+    globalLog << endl
+              << "====== Informações Gerais do Sistema Operacional ======" << endl;
+    globalLog << "Número de Núcleos: " << NUM_NUCLEOS << endl;
+    globalLog << "Número de Processos: " << disco.listInstructionsFile("data/instr").size() << endl;
+    globalLog << "Política de Escalonamento: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF      ? "SJF"
+                                                                                                                 : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::PRIORIDADE ? "PRIORIDADE"
+                                                                                                                                                                                : "ROUNDROBIN")
+              << endl;
+    globalLog << "Recursos Disponíveis: " << endl;
+    periferico.exibirPerifericos(globalLog);
+    globalLog << "=======================================================" << endl
+              << endl;
+
+    // Configurando a política de escalonamento
+    escalonador.configurarPolitica(POLITICA_ESCALONAMENTO);
 
     // Criando e configurando PCBs
     vector<PCB *> pcbs = Bootloader::createAndConfigPCBs(disco, ram, regs, escalonador, arquivosInstrucoes, globalLog);
@@ -150,22 +203,24 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     auto fim = chrono::high_resolution_clock::now();
     double duracao = chrono::duration_cast<chrono::duration<double, milli>>(fim - inicio).count();
 
-    globalLog << "\n===== Tempo Total de Execução =====\n";
+    globalLog << endl
+              << "=============== Tempo Total de Execução ===============" << endl;
     globalLog << "Duração total: " << fixed << setprecision(3) << duracao << " ms\n";
 
     // Exibindo estatísticas de cada núcleo
     for (size_t i = 0; i < cores.size(); ++i)
     {
-        globalLog << "\n===== [CORE " << i + 1 << "] =====";
+        globalLog << endl
+                  << "====================== [CORE " << i + 1 << "] =======================";
         cores[i].exibirTempoCore(globalLog);
     }
 
     // Exibindo o estado final da RAM
-    globalLog << "\n===== Estado Final da RAM =====\n";
+    globalLog << "\n================= Estado Final da RAM =================\n";
     ram.display(globalLog);
 
     // Exibindo o estado final do Disco
-    globalLog << "\n===== Estado Final do Disco =====\n";
+    globalLog << "\n================ Estado Final do Disco ================\n";
     disco.display(globalLog);
 
     // Liberando memória dos processos
