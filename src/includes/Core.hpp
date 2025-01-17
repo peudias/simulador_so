@@ -51,7 +51,6 @@ private:
 
     void validateMemoryAccess(PCB *processo, int endereco, ofstream &outfile);
     void gerenciarRecursos(PCB *processo, ofstream &outfile);
-    void registrarMetricasExecucao(PCB *pcb, ofstream &outfile);
 };
 
 #endif

@@ -26,9 +26,8 @@ void Core::activate(ofstream &outfile)
         }
 
         // **Cálculo do tempo de espera e tempo de retorno
-        // registrarMetricasExecucao(pcb, outfile);
-        int tempoExecutado = 0;       // Tempo efetivo de execução do processo neste núcleo
-        int tempoEspera = tempoAtual; // **Corrigir cálculo do Tempo de Espera**
+        int tempoExecutado = 0;
+        int tempoEspera = tempoAtual;
 
         // Restaurar o estado do processo
         auto pipelineState = pipeline.getPipelineState();
@@ -73,7 +72,6 @@ void Core::activate(ofstream &outfile)
 
             // Executa a instrução
             uc.executarInstrucao(instr, pcb->registradores, ram, pcb->PC, disco, Clock, *pcb, outfile);
-            // cout << "[Pipeline] Executando instrução: Opcode " << instr.op << "\n";
 
             // Incrementa o PC
             pcb->PC += 1; // Incremento em unidades para acompanhar a RAM
@@ -85,14 +83,11 @@ void Core::activate(ofstream &outfile)
 
         // **Corrigir tempo de retorno para processos preemptados**
         int tempoRetorno = tempoEspera + tempoExecutado; // Agora, considera só o tempo real executado
-
         // Atualizar métricas do núcleo
         tempoTotalEspera += tempoEspera;
         tempoTotalRetorno += tempoRetorno;
         processosExecutados++;
-
-        // **Atualizar tempo total do núcleo apenas com tempo real de execução**
-        tempoAtual += tempoExecutado;
+        tempoAtual += tempoExecutado; // **Atualizar tempo total do núcleo apenas com tempo real de execução**
 
         outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
                 << " | Processo: " << pcb->pid
@@ -162,26 +157,6 @@ void Core::run()
     activate(outfile);
     exibirTempoCore(outfile);
     outfile.close();
-}
-
-void Core::registrarMetricasExecucao(PCB *pcb, ofstream &outfile)
-{
-    int tempoEspera = tempoAtual;
-    int tempoRetorno = tempoEspera + pcb->tempoEstimado;
-
-    // Atualizar métricas individuais do núcleo
-    tempoTotalEspera += tempoEspera;
-    tempoTotalRetorno += tempoRetorno;
-    processosExecutados++;
-
-    // Atualizar o tempo total do núcleo
-    tempoAtual += pcb->tempoEstimado;
-
-    outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
-            << " | Processo: " << pcb->pid
-            << " | Tempo de Espera: " << tempoEspera
-            << " | Tempo de Retorno: " << tempoRetorno
-            << " | Processos Executados: " << processosExecutados << endl;
 }
 
 void Core::exibirTempoCore(ofstream &outfile)
