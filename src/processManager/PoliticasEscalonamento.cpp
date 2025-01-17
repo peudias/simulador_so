@@ -18,11 +18,15 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoFCFS(queue<PCB *> &filaPro
     tempoAtualFCFS += processo->tempoEstimado;
     processosExecutadosFCFS++;
 
-    outfile << "\n************************************************************************************************************************\n";
+    processo->custoComputacional = tempoTotalRetornoFCFS / processosExecutadosFCFS;
+
+    outfile
+        << "\n************************************************************************************************************************\n";
     outfile << "[Escalonador][FCFS] Retirando o processo " << processo->pid << " da fila de PRONTOS. Tamanho: " << processo->tempoEstimado << ".\n";
-    outfile << "Tempo de espera: " << tempoEsperaFCFS << " | Tempo de retorno: " << tempoRetornoFCFS << ".\n";
+    outfile << "[Escalonador][FCFS] Tempo de espera: " << tempoEsperaFCFS << " | Tempo de retorno: " << tempoRetornoFCFS << ".\n";
     outfile << "[Escalonador][FCFS] Tempo médio de espera: " << (tempoTotalEsperaFCFS / processosExecutadosFCFS)
             << " | Tempo médio de retorno: " << (tempoTotalRetornoFCFS / processosExecutadosFCFS) << ".\n";
+    outfile << "[Escalonador][FCFS] Quantidade de processos executados no simulador: " << processosExecutadosFCFS << ".\n";
 
     return processo;
 }
@@ -65,12 +69,15 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoSJF(queue<PCB *> &filaPron
     tempoAtual += processoMenorTempo->tempoEstimado;
     processosExecutados++;
 
+    processoMenorTempo->custoComputacional = tempoTotalRetorno / processosExecutados;
+
     outfile << "\n************************************************************************************************************************\n";
     outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid
             << " da fila de PRONTOS. Tamanho: " << processoMenorTempo->tempoEstimado << ".\n";
-    outfile << "Tempo de espera: " << tempoEspera << " | Tempo de retorno: " << tempoRetorno << ".\n";
+    outfile << "[Escalonador][SJF] Tempo de espera: " << tempoEspera << " | Tempo de retorno: " << tempoRetorno << ".\n";
     outfile << "[Escalonador][SJF] Tempo médio de espera: " << (tempoTotalEspera / processosExecutados)
             << " | Tempo médio de retorno: " << (tempoTotalRetorno / processosExecutados) << ".\n";
+    outfile << "[Escalonador][SJF] Quantidade de processos executados no simulador: " << processosExecutados << ".\n";
 
     return processoMenorTempo;
 }
@@ -112,6 +119,8 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(queue<PCB *> &f
     tempoAtualPrioridade += processoMaiorPrioridade->tempoEstimado;
     processosExecutadosPrioridade++;
 
+    processoMaiorPrioridade->custoComputacional = tempoTotalRetornoPrioridade / processosExecutadosPrioridade;
+
     outfile << "\n************************************************************************************************************************\n";
     outfile << "[Escalonador][Prioridade] Retirando o processo " << processoMaiorPrioridade->pid
             << " da fila de PRONTOS. Prioridade [Nível " << processoMaiorPrioridade->prioridade << "][";
@@ -120,9 +129,10 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(queue<PCB *> &f
         outfile << "★";
     }
     outfile << "]\n";
-    outfile << "Tempo de espera: " << tempoEsperaPrioridade << " | Tempo de retorno: " << tempoRetornoPrioridade << ".\n";
+    outfile << "[Escalonador][Prioridade] Tempo de espera: " << tempoEsperaPrioridade << " | Tempo de retorno: " << tempoRetornoPrioridade << ".\n";
     outfile << "[Escalonador][Prioridade] Tempo médio de espera: " << (tempoTotalEsperaPrioridade / processosExecutadosPrioridade)
             << " | Tempo médio de retorno: " << (tempoTotalRetornoPrioridade / processosExecutadosPrioridade) << ".\n";
+    outfile << "[Escalonador][Prioridade] Quantidade de processos executados no simulador: " << processosExecutadosPrioridade << ".\n";
 
     return processoMaiorPrioridade;
 }

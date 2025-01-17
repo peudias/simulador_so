@@ -199,13 +199,24 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
         th.join(); // Espera todas as threads terminarem
     }
 
+    double custoComputacionalGlobal = 0;
+    for (size_t i = 0; i < pcbs.size(); ++i)
+    {
+
+        if (pcbs[i]->custoComputacional > custoComputacionalGlobal)
+        {
+            custoComputacionalGlobal = pcbs[i]->custoComputacional;
+        }
+    }
+
     // Medindo o tempo final de execução
     auto fim = chrono::high_resolution_clock::now();
     double duracao = chrono::duration_cast<chrono::duration<double, milli>>(fim - inicio).count();
 
     globalLog << endl
               << "=============== Tempo Total de Execução ===============" << endl;
-    globalLog << "Duração total: " << fixed << setprecision(3) << duracao << " ms\n";
+    globalLog << "Duração Total: " << fixed << setprecision(3) << duracao << " ms\n";
+    globalLog << "Custo Computacional Global: " << custoComputacionalGlobal << "\n";
 
     // Exibindo estatísticas de cada núcleo
     for (size_t i = 0; i < cores.size(); ++i)

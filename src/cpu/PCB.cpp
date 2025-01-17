@@ -4,7 +4,8 @@
 
 PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limite, int tempoEstimado, int prioridade)
     : pid(id), estado(PRONTO), PC(0), quantumProcesso(quantum), quantumRestante(quantum),
-      registradores(regs), enderecoBaseInstrucoes(enderecoBase), enderecoLimiteInstrucoes(limite), tempoEstimado(tempoEstimado), prioridade(prioridade) {}
+      registradores(regs), enderecoBaseInstrucoes(enderecoBase), enderecoLimiteInstrucoes(limite),
+      tempoEstimado(tempoEstimado), prioridade(prioridade), custoComputacional(0) {}
 
 void PCB::atualizarEstado(EstadoProcesso novoEstado, ofstream &outfile)
 {
