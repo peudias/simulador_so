@@ -39,7 +39,7 @@ vector<PCB *> ProcessManager::createPCBs(Disco &disco, RAM &ram, Registers &regs
         int prioridade = prioridades[i];
 
         // Cria o PCB associado à faixa de memória de instruções
-        PCB *novoPCB = new PCB(i + 1, quantumRandom, regs, enderecoAtual, enderecoAtual + quantidadeInstrucoes - 1, tempoEstimado, prioridade);
+        PCB *novoPCB = new PCB(i + 1, quantumRandom, regs, enderecoAtual, enderecoAtual + quantidadeInstrucoes, tempoEstimado, prioridade);
 
         // Configura o PC inicial do processo
         novoPCB->PC = enderecoAtual;

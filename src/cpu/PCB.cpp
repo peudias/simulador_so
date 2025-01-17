@@ -55,7 +55,7 @@ void PCB::restaurarEstado(std::vector<int> &pipelineState, ofstream &outfile)
 
 int PCB::calcularInstrucoesRestantes() const
 {
-    int instrucoesRestantes = enderecoLimiteInstrucoes - PC + 1;
+    int instrucoesRestantes = enderecoLimiteInstrucoes - PC;
     return (instrucoesRestantes < 0) ? 0 : instrucoesRestantes; // Garante que o resultado seja não negativo
 }
 
@@ -144,7 +144,7 @@ void PCB::exibirPCB(ofstream &outfile) const
                                                         : estado == BLOQUEADO  ? "BLOQUEADO"
                                                                                : "FINALIZADO")
             << "\n"
-            << "[Quantum] Tarefas Inicialmente: " << enderecoLimiteInstrucoes - enderecoBaseInstrucoes + 1 << " | Tarefas Restantes: " << calcularInstrucoesRestantes() << " | Alocado: " << quantumProcesso << " | Disponível: " << quantumRestante << "\n"
+            << "[Quantum] Tarefas Inicialmente: " << enderecoLimiteInstrucoes - enderecoBaseInstrucoes << " | Tarefas Restantes: " << calcularInstrucoesRestantes() << " | Alocado: " << quantumProcesso << " | Disponível: " << quantumRestante << "\n"
             << "PC: " << PC << "\n";
     //         << "\nRegistradores:\n";
     // registradores.display(outfile);

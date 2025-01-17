@@ -53,16 +53,6 @@ void Core::activate(ofstream &outfile)
             // Valida se o PC está dentro do limite de instruções antes do fetch
             if (pcb->PC >= pcb->getLimiteInstrucoes())
             {
-                pcb->PC += 1;
-
-                int instrucoesRestantes = pcb->getLimiteInstrucoes() - pcb->PC + 1;
-                if (instrucoesRestantes <= 0)
-                    instrucoesRestantes = 0;
-
-                outfile << "[Quantum] Processo " << pcb->pid
-                        << " | Tarefas Restantes: " << pcb->calcularInstrucoesRestantes()
-                        << " | Alocado Restante: " << pcb->quantumRestante << endl;
-
                 outfile << "\n[Núcleo " << this_thread::get_id() << "] Processo " << pcb->pid
                         << " executou todas as instruções (PC: " << pcb->PC
                         << ", Base: " << pcb->getEnderecoBaseInstrucoes()
@@ -109,6 +99,7 @@ void Core::activate(ofstream &outfile)
                 << " | Tempo de Espera: " << tempoEspera
                 << " | Tempo Executado: " << tempoExecutado
                 << " | Tempo de Retorno: " << tempoRetorno
+                << " | Tarefas Restantes: " << pcb->calcularInstrucoesRestantes()
                 << " | Processos Executados: " << processosExecutados << endl;
 
         // Salvar o estado do processo
