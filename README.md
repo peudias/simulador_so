@@ -68,7 +68,7 @@ Exemplo:
 
 ### configBootloader.txt
 
-Configura o número de núcleos, limites de quantum e diretório de logs.
+Configura o número de núcleos, limites de quantum, diretório de logs e política de escalonamento (FCFS, SJF, PRIORIDADE).
 
 Exemplo:
 
@@ -77,6 +77,7 @@ NUM_NUCLEOS=4
 QUANTUM_PROCESS_MIN=20
 QUANTUM_PROCESS_MAX=50
 OUTPUT_LOGS_DIR=data/logs
+POLITICA_ESCALONAMENTO=SJF
 ```
 
 ---
