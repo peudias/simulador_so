@@ -74,10 +74,10 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoSJF(queue<PCB *> &filaPron
     outfile << "\n************************************************************************************************************************\n";
     outfile << "[Escalonador][SJF] Retirando o processo " << processoMenorTempo->pid
             << " da fila de PRONTOS. Tamanho: " << processoMenorTempo->tempoEstimado << ".\n";
-    outfile << "[Escalonador][SJF] Tempo de espera: " << tempoEspera << " | Tempo de retorno: " << tempoRetorno << ".\n";
-    outfile << "[Escalonador][SJF] Tempo médio de espera: " << (tempoTotalEspera / processosExecutados)
-            << " | Tempo médio de retorno: " << (tempoTotalRetorno / processosExecutados) << ".\n";
-    outfile << "[Escalonador][SJF] Quantidade de processos executados no simulador: " << processosExecutados << ".\n";
+    // outfile << "[Escalonador][SJF] Tempo de espera: " << tempoEspera << " | Tempo de retorno: " << tempoRetorno << ".\n";
+    // outfile << "[Escalonador][SJF] Tempo médio de espera: " << (tempoTotalEspera / processosExecutados)
+    //         << " | Tempo médio de retorno: " << (tempoTotalRetorno / processosExecutados) << ".\n";
+    // outfile << "[Escalonador][SJF] Quantidade de processos executados no simulador: " << processosExecutados << ".\n";
 
     return processoMenorTempo;
 }

@@ -26,7 +26,9 @@ void Core::activate(ofstream &outfile)
         }
 
         // **Cálculo do tempo de espera e tempo de retorno
-        registrarMetricasExecucao(pcb, outfile);
+        // registrarMetricasExecucao(pcb, outfile);
+        int tempoExecutado = 0;       // Tempo efetivo de execução do processo neste núcleo
+        int tempoEspera = tempoAtual; // **Corrigir cálculo do Tempo de Espera**
 
         // Restaurar o estado do processo
         auto pipelineState = pipeline.getPipelineState();
@@ -88,7 +90,26 @@ void Core::activate(ofstream &outfile)
 
             // Decrementa o quantum
             pcb->decrementarQuantum(outfile);
+            tempoExecutado++; // Atualiza tempo de execução real
         }
+
+        // **Corrigir tempo de retorno para processos preemptados**
+        int tempoRetorno = tempoEspera + tempoExecutado; // Agora, considera só o tempo real executado
+
+        // Atualizar métricas do núcleo
+        tempoTotalEspera += tempoEspera;
+        tempoTotalRetorno += tempoRetorno;
+        processosExecutados++;
+
+        // **Atualizar tempo total do núcleo apenas com tempo real de execução**
+        tempoAtual += tempoExecutado;
+
+        outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
+                << " | Processo: " << pcb->pid
+                << " | Tempo de Espera: " << tempoEspera
+                << " | Tempo Executado: " << tempoExecutado
+                << " | Tempo de Retorno: " << tempoRetorno
+                << " | Processos Executados: " << processosExecutados << endl;
 
         // Salvar o estado do processo
         pcb->salvarEstado(pipeline.getPipelineState());
@@ -179,7 +200,6 @@ void Core::exibirTempoCore(ofstream &outfile)
     outfile << "Núcleo ID: " << this_thread::get_id() << endl;
     outfile << "Tempo ocupado: " << tempoOcupado << " ms\n";
     outfile << "Tempo ocioso: " << tempoOcioso << " ms\n";
-    outfile << "Tempo total de retorno: " << tempoTotalRetorno << " ms\n";
 
     if (processosExecutados > 0)
     {
