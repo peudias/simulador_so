@@ -33,6 +33,10 @@ public:
     Escalonador &escalonador;
     Pipeline pipeline;
 
+    double tempoTotalEspera = 0.0;
+    double tempoTotalRetorno = 0.0;
+    int processosExecutados = 0;
+
     Core(RAM &ram, Disco &disco, Escalonador &escalonador);
     void activate(ofstream &outfile);
     void run();
@@ -46,6 +50,7 @@ private:
 
     void validateMemoryAccess(PCB *processo, int endereco, ofstream &outfile);
     void gerenciarRecursos(PCB *processo, ofstream &outfile);
+    void registrarMetricasExecucao(PCB *pcb, ofstream &outfile);
 };
 
 #endif

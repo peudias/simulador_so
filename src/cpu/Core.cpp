@@ -25,6 +25,8 @@ void Core::activate(ofstream &outfile)
             return;
         }
 
+        registrarMetricasExecucao(pcb, outfile);
+
         // Restaurar o estado do processo
         auto pipelineState = pipeline.getPipelineState();
         pcb->restaurarEstado(pipelineState, outfile);
@@ -85,6 +87,12 @@ void Core::activate(ofstream &outfile)
 
             // Decrementa o quantum
             pcb->decrementarQuantum(outfile);
+
+            // 🔹 **Monitoramento contínuo para cada núcleo**
+            // outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
+            //         << " | Processo: " << pcb->pid
+            //         << " | Clock Atual: " << Clock
+            //         << " | Quantum Restante: " << pcb->quantumRestante << endl;
         }
 
         // Salvar o estado do processo
@@ -149,23 +157,56 @@ void Core::run()
     outfile.close();
 }
 
+void Core::registrarMetricasExecucao(PCB *pcb, ofstream &outfile)
+{
+    // Cada núcleo usa seu próprio Clock como tempo de espera inicial
+    int tempoEspera = Clock;
+    int tempoRetorno = tempoEspera + pcb->tempoEstimado;
+
+    // Atualiza métricas individuais do núcleo
+    tempoTotalEspera += tempoEspera;
+    tempoTotalRetorno += tempoRetorno;
+    processosExecutados++;
+
+    // Imprimir métricas **de forma isolada por núcleo**
+    outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
+            << " | Processo: " << pcb->pid
+            << " | Tempo de Espera Atual: " << tempoEspera
+            << " | Tempo de Retorno Estimado: " << tempoRetorno
+            << " | Processos Executados: " << processosExecutados << endl;
+}
+
 void Core::exibirTempoCore(ofstream &outfile)
 {
     outfile << fixed << setprecision(3);
-    outfile << endl
-            << "=============== Estatísticas do Núcleo ================" << endl;
+    outfile << "\n=============== Estatísticas do Núcleo ================" << endl;
+    outfile << "Núcleo ID: " << this_thread::get_id() << endl;
     outfile << "Tempo ocupado: " << tempoOcupado << " ms\n";
     outfile << "Tempo ocioso: " << tempoOcioso << " ms\n";
 
+    if (processosExecutados > 0)
+    {
+        outfile << "Tempo médio de espera: " << (tempoTotalEspera / processosExecutados) << " ms\n";
+        outfile << "Tempo médio de retorno: " << (tempoTotalRetorno / processosExecutados) << " ms\n";
+    }
+    else
+    {
+        outfile << "Tempo médio de espera: N/A\n";
+        outfile << "Tempo médio de retorno: N/A\n";
+    }
+
+    outfile << "Número total de processos executados: " << processosExecutados << endl;
+
     if (tempoOcupado + tempoOcioso > 0)
     {
-        outfile << "Taxa de utilização: "
-                << (tempoOcupado / (tempoOcupado + tempoOcioso)) * 100 << " %\n";
+        outfile << "Taxa de utilização: " << (tempoOcupado / (tempoOcupado + tempoOcioso)) * 100 << " %\n";
     }
     else
     {
         outfile << "Taxa de utilização: 0.000 %\n";
     }
+
+    outfile << "========================================================\n";
 }
 
 void Core::validateMemoryAccess(PCB *processo, int endereco, ofstream &outfile)
