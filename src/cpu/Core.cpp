@@ -25,6 +25,7 @@ void Core::activate(ofstream &outfile)
             return;
         }
 
+        // **Cálculo do tempo de espera e tempo de retorno
         registrarMetricasExecucao(pcb, outfile);
 
         // Restaurar o estado do processo
@@ -87,12 +88,6 @@ void Core::activate(ofstream &outfile)
 
             // Decrementa o quantum
             pcb->decrementarQuantum(outfile);
-
-            // 🔹 **Monitoramento contínuo para cada núcleo**
-            // outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
-            //         << " | Processo: " << pcb->pid
-            //         << " | Clock Atual: " << Clock
-            //         << " | Quantum Restante: " << pcb->quantumRestante << endl;
         }
 
         // Salvar o estado do processo
@@ -159,20 +154,21 @@ void Core::run()
 
 void Core::registrarMetricasExecucao(PCB *pcb, ofstream &outfile)
 {
-    // Cada núcleo usa seu próprio Clock como tempo de espera inicial
-    int tempoEspera = Clock;
+    int tempoEspera = tempoAtual;
     int tempoRetorno = tempoEspera + pcb->tempoEstimado;
 
-    // Atualiza métricas individuais do núcleo
+    // Atualizar métricas individuais do núcleo
     tempoTotalEspera += tempoEspera;
     tempoTotalRetorno += tempoRetorno;
     processosExecutados++;
 
-    // Imprimir métricas **de forma isolada por núcleo**
+    // Atualizar o tempo total do núcleo
+    tempoAtual += pcb->tempoEstimado;
+
     outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
             << " | Processo: " << pcb->pid
-            << " | Tempo de Espera Atual: " << tempoEspera
-            << " | Tempo de Retorno Estimado: " << tempoRetorno
+            << " | Tempo de Espera: " << tempoEspera
+            << " | Tempo de Retorno: " << tempoRetorno
             << " | Processos Executados: " << processosExecutados << endl;
 }
 
@@ -183,6 +179,7 @@ void Core::exibirTempoCore(ofstream &outfile)
     outfile << "Núcleo ID: " << this_thread::get_id() << endl;
     outfile << "Tempo ocupado: " << tempoOcupado << " ms\n";
     outfile << "Tempo ocioso: " << tempoOcioso << " ms\n";
+    outfile << "Tempo total de retorno: " << tempoTotalRetorno << " ms\n";
 
     if (processosExecutados > 0)
     {

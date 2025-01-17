@@ -36,6 +36,7 @@ public:
     double tempoTotalEspera = 0.0;
     double tempoTotalRetorno = 0.0;
     int processosExecutados = 0;
+    int tempoAtual = 0; // Tempo total já decorrido neste núcleo
 
     Core(RAM &ram, Disco &disco, Escalonador &escalonador);
     void activate(ofstream &outfile);
