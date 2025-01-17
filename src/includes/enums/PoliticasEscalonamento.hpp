@@ -14,7 +14,6 @@ enum class PoliticasEscalonamento
     FCFS,
     SJF,
     PRIORIDADE,
-    ROUNDROBIN
 };
 
 // Classe para implementar as diferentes políticas de escalonamento
@@ -24,7 +23,6 @@ public:
     static PCB *selecionarProcessoFCFS(queue<PCB *> &filaProntos, ofstream &outfile);
     static PCB *selecionarProcessoSJF(queue<PCB *> &filaProntos, ofstream &outfile);
     static PCB *selecionarProcessoPrioridade(queue<PCB *> &filaProntos, ofstream &outfile);
-    static PCB *selecionarProcessoRoundRobin(queue<PCB *> &filaProntos, ofstream &outfile);
 };
 
 #endif

@@ -49,8 +49,7 @@ void Bootloader::loadConfigBootloader(const string &file)
     unordered_map<string, PoliticasEscalonamento> politicaMap = {
         {"FCFS", PoliticasEscalonamento::FCFS},
         {"SJF", PoliticasEscalonamento::SJF},
-        {"PRIORIDADE", PoliticasEscalonamento::PRIORIDADE},
-        {"ROUNDROBIN", PoliticasEscalonamento::ROUNDROBIN}};
+        {"PRIORIDADE", PoliticasEscalonamento::PRIORIDADE}};
 
     string politicaStr = configs["POLITICA_ESCALONAMENTO"];
     if (politicaMap.find(politicaStr) != politicaMap.end())
@@ -110,12 +109,6 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
             globalLog << "]" << endl;
         }
 
-        if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::ROUNDROBIN)
-        {
-            globalLog << endl
-                      << "[Bootloader][RoundRobin] Processo " << pcb->pid << " preparado com quantum inicial: " << pcb->quantumRestante << " ms." << endl;
-        }
-
         // Associar recurso apenas ao processo com PID = 2
         if (pcb->pid == 2)
         {
@@ -165,9 +158,8 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
               << "====== Informações Gerais do Sistema Operacional ======" << endl;
     globalLog << "Número de Núcleos: " << NUM_NUCLEOS << endl;
     globalLog << "Número de Processos: " << disco.listInstructionsFile("data/instr").size() << endl;
-    globalLog << "Política de Escalonamento: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF      ? "SJF"
-                                                                                                                 : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::PRIORIDADE ? "PRIORIDADE"
-                                                                                                                                                                                : "ROUNDROBIN")
+    globalLog << "Política de Escalonamento: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF ? "SJF"
+                                                                                                                                                                           : "PRIORIDADE")
               << endl;
     globalLog << "Recursos Disponíveis: " << endl;
     periferico.exibirPerifericos(globalLog);
@@ -199,16 +191,6 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
         th.join(); // Espera todas as threads terminarem
     }
 
-    double custoComputacionalGlobal = 0;
-    for (size_t i = 0; i < pcbs.size(); ++i)
-    {
-
-        if (pcbs[i]->custoComputacional > custoComputacionalGlobal)
-        {
-            custoComputacionalGlobal = pcbs[i]->custoComputacional;
-        }
-    }
-
     // Medindo o tempo final de execução
     auto fim = chrono::high_resolution_clock::now();
     double duracao = chrono::duration_cast<chrono::duration<double, milli>>(fim - inicio).count();
@@ -216,7 +198,6 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     globalLog << endl
               << "=============== Tempo Total de Execução ===============" << endl;
     globalLog << "Duração Total: " << fixed << setprecision(3) << duracao << " ms\n";
-    globalLog << "Custo Computacional Global: " << custoComputacionalGlobal << "\n";
 
     // Exibindo estatísticas de cada núcleo
     for (size_t i = 0; i < cores.size(); ++i)

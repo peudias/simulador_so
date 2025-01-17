@@ -39,9 +39,6 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
     case PoliticasEscalonamento::PRIORIDADE:
         processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(filaProntos, outfile);
         break;
-    case PoliticasEscalonamento::ROUNDROBIN:
-        processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoRoundRobin(filaProntos, outfile);
-        break;
     }
 
     if (!processoSelecionado)

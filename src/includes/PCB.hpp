@@ -25,7 +25,6 @@ public:
     int enderecoLimiteInstrucoes;
     int tempoEstimado;
     int prioridade;
-    double custoComputacional;
     EstadoProcesso estado;
     Registers registradores;
     Perifericos recursos;

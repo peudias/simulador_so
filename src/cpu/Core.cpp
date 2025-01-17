@@ -89,13 +89,12 @@ void Core::activate(ofstream &outfile)
         processosExecutados++;
         tempoAtual += tempoExecutado; // **Atualizar tempo total do núcleo apenas com tempo real de execução**
 
-        outfile << "[Monitoramento] Núcleo: " << this_thread::get_id()
-                << " | Processo: " << pcb->pid
+        outfile << "[Núcleo " << this_thread::get_id()
+                << "] Processo: " << pcb->pid
                 << " | Tempo de Espera: " << tempoEspera
                 << " | Tempo Executado: " << tempoExecutado
                 << " | Tempo de Retorno: " << tempoRetorno
-                << " | Tarefas Restantes: " << pcb->calcularInstrucoesRestantes()
-                << " | Processos Executados: " << processosExecutados << endl;
+                << " | Execuções de Processos: " << processosExecutados << endl;
 
         // Salvar o estado do processo
         pcb->salvarEstado(pipeline.getPipelineState());
@@ -161,7 +160,7 @@ void Core::run()
 
 void Core::exibirTempoCore(ofstream &outfile)
 {
-    outfile << fixed << setprecision(3);
+    outfile << fixed << setprecision(2);
     outfile << "\n=============== Estatísticas do Núcleo ================" << endl;
     outfile << "Núcleo ID: " << this_thread::get_id() << endl;
     outfile << "Tempo ocupado: " << tempoOcupado << " ms\n";
@@ -169,8 +168,8 @@ void Core::exibirTempoCore(ofstream &outfile)
 
     if (processosExecutados > 0)
     {
-        outfile << "Tempo médio de espera: " << (tempoTotalEspera / processosExecutados) << " ms\n";
-        outfile << "Tempo médio de retorno: " << (tempoTotalRetorno / processosExecutados) << " ms\n";
+        outfile << "Tempo médio de espera: " << (tempoTotalEspera / processosExecutados) << " unidades de tempo\n";
+        outfile << "Tempo médio de retorno: " << (tempoTotalRetorno / processosExecutados) << " unidades de tempo\n";
     }
     else
     {
@@ -178,7 +177,7 @@ void Core::exibirTempoCore(ofstream &outfile)
         outfile << "Tempo médio de retorno: N/A\n";
     }
 
-    outfile << "Número total de processos executados: " << processosExecutados << endl;
+    outfile << "Número total de execuções de processos: " << processosExecutados << endl;
 
     if (tempoOcupado + tempoOcioso > 0)
     {
