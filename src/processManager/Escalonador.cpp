@@ -1,7 +1,13 @@
 #include "../includes/Escalonador.hpp"
 
 Escalonador::Escalonador(PoliticasEscalonamento politica)
-    : politicaAtual(politica) {}
+    : politicaAtual(politica), cache(nullptr), ram(nullptr) {}
+
+void Escalonador::configurarCacheERAM(Cache *cache, RAM *ram)
+{
+    this->cache = cache;
+    this->ram = ram;
+}
 
 void Escalonador::configurarPolitica(PoliticasEscalonamento novaPolitica)
 {
@@ -38,6 +44,17 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
         break;
     case PoliticasEscalonamento::PRIORIDADE:
         processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(filaProntos, outfile);
+        break;
+    case PoliticasEscalonamento::SIMILARIDADE:
+        if (cache && ram)
+        {
+            processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoSimilaridade(filaProntos, *cache, *ram, outfile);
+        }
+        else
+        {
+            outfile << "[Erro] Cache ou RAM não inicializadas! Usando FCFS como fallback.\n";
+            processoSelecionado = PoliticasEscalonamentoHandler::selecionarProcessoFCFS(filaProntos, outfile);
+        }
         break;
     }
 
@@ -78,4 +95,9 @@ bool Escalonador::filaVazia() const
 bool Escalonador::temProcessosProntos() const
 {
     return !filaProntos.empty();
+}
+
+queue<PCB *> &Escalonador::getFilaProntos()
+{
+    return filaProntos;
 }

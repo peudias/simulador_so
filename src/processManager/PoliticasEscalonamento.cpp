@@ -79,3 +79,23 @@ PCB *PoliticasEscalonamentoHandler::selecionarProcessoPrioridade(queue<PCB *> &f
 
     return processoMaiorPrioridade;
 }
+
+PCB *PoliticasEscalonamentoHandler::selecionarProcessoSimilaridade(queue<PCB *> &filaProntos, Cache &cache, RAM &ram, ofstream &outfile)
+{
+    // Utiliza o LSH no Bootloader para organizar a fila antes da execução
+
+    // Retorna o primeiro processo da fila reorganizada
+    if (filaProntos.empty())
+    {
+        outfile << "[Erro] Nenhum processo disponível para execução no escalonador de Similaridade.\n";
+        return nullptr;
+    }
+
+    PCB *processoSelecionado = filaProntos.front();
+    filaProntos.pop();
+
+    outfile << "[Escalonador][SIMILARIDADE] Processo " << processoSelecionado->pid
+            << " selecionado com LSH.\n";
+
+    return processoSelecionado;
+}

@@ -5,7 +5,19 @@ string Bootloader::OUTPUT_LOGS_DIR = "";
 int Bootloader::NUM_NUCLEOS = 0;
 int Bootloader::QUANTUM_PROCESS_MIN = 0;
 int Bootloader::QUANTUM_PROCESS_MAX = 0;
+int Bootloader::CACHE_CAPACIDADE = 15; // Capacidade máx da Cache
 PoliticasEscalonamento Bootloader::POLITICA_ESCALONAMENTO = PoliticasEscalonamento::FCFS;
+Cache *Bootloader::cache = nullptr;
+
+void Bootloader::liberarRecursos()
+{
+    if (cache)
+    {
+        delete cache;
+        cache = nullptr;
+        // cout << "[Bootloader] Cache liberada da memória.\n";
+    }
+}
 
 void Bootloader::loadConfigBootloader(const string &file)
 {
@@ -49,7 +61,8 @@ void Bootloader::loadConfigBootloader(const string &file)
     unordered_map<string, PoliticasEscalonamento> politicaMap = {
         {"FCFS", PoliticasEscalonamento::FCFS},
         {"SJF", PoliticasEscalonamento::SJF},
-        {"PRIORIDADE", PoliticasEscalonamento::PRIORIDADE}};
+        {"PRIORIDADE", PoliticasEscalonamento::PRIORIDADE},
+        {"SIMILARIDADE", PoliticasEscalonamento::SIMILARIDADE}};
 
     string politicaStr = configs["POLITICA_ESCALONAMENTO"];
     if (politicaMap.find(politicaStr) != politicaMap.end())
@@ -126,9 +139,9 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
 void Bootloader::createCores(vector<Core> &cores, int numNucleos, RAM &ram, Disco &disco, Escalonador &escalonador)
 {
     // Criando múltiplos núcleos
-    for (int i = 0; i < numNucleos; ++i)
+    for (int i = 0; i < NUM_NUCLEOS; ++i)
     {
-        cores.push_back(Core(ram, disco, escalonador));
+        cores.push_back(Core(ram, disco, escalonador, cache)); // Passamos a Cache para os Cores
     }
 }
 
@@ -147,6 +160,15 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
 
     globalLog << "Inicializando o sistema..." << endl;
 
+    // Criar a Cache se a política for SIMILARIDADE**
+    if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SIMILARIDADE)
+    {
+        cache = new Cache(CACHE_CAPACIDADE);
+        globalLog << "[Bootloader] Cache ativada com política LRU e capacidade de " << CACHE_CAPACIDADE << " instruções.\n";
+    }
+
+    // Agora passamos a Cache e a RAM para o Escalonador depois da criação
+    escalonador.configurarCacheERAM(cache, &ram);
     // Configurando os registradores
     disco.setRegistersFromFile(regs, "data/setRegisters.txt");
 
@@ -159,7 +181,8 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     globalLog << "Número de Núcleos: " << NUM_NUCLEOS << endl;
     globalLog << "Número de Processos: " << disco.listInstructionsFile("data/instr").size() << endl;
     globalLog << "Política de Escalonamento: " << (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::FCFS ? "FCFS" : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF ? "SJF"
-                                                                                                                                                                           : "PRIORIDADE")
+                                                                                                                 : POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SJF   ? "PRIORIDADE"
+                                                                                                                                                                           : "SIMILARIDADE")
               << endl;
     globalLog << "Recursos Disponíveis: " << endl;
     periferico.exibirPerifericos(globalLog);
@@ -171,6 +194,13 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
 
     // Criando e configurando PCBs
     vector<PCB *> pcbs = Bootloader::createAndConfigPCBs(disco, ram, regs, escalonador, arquivosInstrucoes, globalLog);
+
+    // Utiliza o LSH para organizar a fila antes da execução
+    if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SIMILARIDADE)
+    {
+        globalLog << "[Bootloader] Aplicando LSH para reorganização da fila antes da execução...\n";
+        LSH::organizarPorSimilaridade(escalonador.getFilaProntos(), ram, globalLog);
+    }
 
     // Criando múltiplos núcleos
     createCores(cores, NUM_NUCLEOS, ram, disco, escalonador);
@@ -225,4 +255,7 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
     cout << "Simulação finalizada. Logs disponíveis em: " << OUTPUT_LOGS_DIR << endl;
 
     globalLog.close();
+
+    // **Liberar a Cache no final**
+    liberarRecursos();
 }

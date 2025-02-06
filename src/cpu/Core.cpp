@@ -2,8 +2,8 @@
 
 #define OUTPUT_DIR "data/logs"
 
-Core::Core(RAM &ram, Disco &disco, Escalonador &escalonador)
-    : ram(ram), disco(disco), PC(0), Clock(0), escalonador(escalonador) {}
+Core::Core(RAM &ram, Disco &disco, Escalonador &escalonador, Cache *cache)
+    : ram(ram), disco(disco), escalonador(escalonador), cache(cache), PC(0), Clock(0) {}
 
 void Core::activate(ofstream &outfile)
 {
@@ -25,9 +25,9 @@ void Core::activate(ofstream &outfile)
             return;
         }
 
-        // **Cálculo do tempo de espera e tempo de retorno
-        int tempoExecutado = 0;
-        int tempoEspera = tempoAtual;
+        // Cálculo do tempo de espera e tempo de retorno
+        double tempoExecutado = 0.0;
+        double tempoEspera = tempoAtual;
 
         // Restaurar o estado do processo
         auto pipelineState = pipeline.getPipelineState();
@@ -70,24 +70,43 @@ void Core::activate(ofstream &outfile)
                 break;
             }
 
-            // Executa a instrução
-            uc.executarInstrucao(instr, pcb->registradores, ram, pcb->PC, disco, Clock, *pcb, outfile);
+            // Integração com a Cache
+            bool instrucaoExecutada = false; // Flag para indicar se houve execução
+            if (cache && cache->contains(instr))
+            { // Verifica se a instrução já está na Cache
+                outfile << "[Cache] Instrução reutilizada da Cache no PC " << pcb->PC << ". Pulando execução.\n";
+                tempoExecutado += 0.2; // Incrementa 1/5 do tempo de execução
+            }
+            else
+            {
+                // Executa a instrução normalmente
+                uc.executarInstrucao(instr, pcb->registradores, ram, pcb->PC, disco, Clock, *pcb, outfile);
+
+                if (cache)
+                { // Armazena o resultado na Cache para reutilização futura
+                    cache->insert(instr, pcb->registradores.get(instr.Destiny_Register));
+                }
+
+                instrucaoExecutada = true;
+            }
 
             // Incrementa o PC
-            pcb->PC += 1; // Incremento em unidades para acompanhar a RAM
+            pcb->PC += 1;
 
-            // Decrementa o quantum
-            pcb->decrementarQuantum(outfile);
-            tempoExecutado++; // Atualiza tempo de execução real
+            if (instrucaoExecutada)
+            {
+                pcb->decrementarQuantum(outfile);
+                tempoExecutado++;
+            }
         }
 
-        // **Corrigir tempo de retorno para processos preemptados**
-        int tempoRetorno = tempoEspera + tempoExecutado; // Agora, considera só o tempo real executado
+        // Corrigir tempo de retorno para processos preemptados
+        double tempoRetorno = tempoEspera + tempoExecutado; // Agora, considera só o tempo real executado
         // Atualizar métricas do núcleo
         tempoTotalEspera += tempoEspera;
         tempoTotalRetorno += tempoRetorno;
         processosExecutados++;
-        tempoAtual += tempoExecutado; // **Atualizar tempo total do núcleo apenas com tempo real de execução**
+        tempoAtual += tempoExecutado;
 
         outfile << "[Núcleo " << this_thread::get_id()
                 << "] Processo: " << pcb->pid

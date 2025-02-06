@@ -9,6 +9,7 @@
 #include "RAM.hpp"
 #include "Registers.hpp"
 #include "UnidadeControle.hpp"
+#include "Cache.hpp"
 
 #include <thread>
 #include <vector>
@@ -32,13 +33,14 @@ public:
     Disco &disco;
     Escalonador &escalonador;
     Pipeline pipeline;
+    Cache *cache;
 
     double tempoTotalEspera = 0.0;
     double tempoTotalRetorno = 0.0;
     int processosExecutados = 0;
     int tempoAtual = 0; // Tempo total já decorrido neste núcleo
 
-    Core(RAM &ram, Disco &disco, Escalonador &escalonador);
+    Core(RAM &ram, Disco &disco, Escalonador &escalonador, Cache *cache = nullptr);
     void activate(ofstream &outfile);
     void run();
     void exibirTempoCore(ofstream &outfile);
