@@ -17,6 +17,7 @@ using namespace std;
 class PCB
 {
 public:
+    string enderecoVirtual;
     int pid;
     int PC;
     int quantumProcesso;
@@ -33,6 +34,9 @@ public:
     vector<int> estadoPipeline; // Estado do pipeline (valores intermediários)
 
     PCB(int id, int quantum, const Registers &regs, int enderecoBaseInstrucoes, int enderecoLimiteInstrucoes, int tempoEstimado, int prioridade);
+
+    void setEnderecoVirtual(const string &endereco);
+    string getEnderecoVirtual() const;
 
     void salvarEstado(const vector<int> &pipelineState);
     void restaurarEstado(vector<int> &pipelineState, ofstream &outfile);

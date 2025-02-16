@@ -8,6 +8,7 @@ int Bootloader::QUANTUM_PROCESS_MAX = 0;
 int Bootloader::CACHE_CAPACIDADE = 15; // Capacidade máx da Cache
 PoliticasEscalonamento Bootloader::POLITICA_ESCALONAMENTO = PoliticasEscalonamento::FCFS;
 Cache *Bootloader::cache = nullptr;
+MMU Bootloader::mmu;
 
 void Bootloader::liberarRecursos()
 {
@@ -101,6 +102,13 @@ vector<PCB *> Bootloader::createAndConfigPCBs(Disco &disco, RAM &ram, Registers 
     // Alocação de memória para cada processo && Adicionando os processos ao escalonador
     for (auto &pcb : pcbs)
     {
+        // Gera um endereço virtual e obtém o endereço físico correspondente
+        string enderecoVirtual = mmu.gerarEnderecoVirtual(pcb->pid);
+        int enderecoFisico = mmu.mapearParaFisico(enderecoVirtual);
+
+        // Atualiza o PCB com o endereço virtual
+        pcb->setEnderecoVirtual(enderecoVirtual);
+
         int enderecoBase = pcb->getEnderecoBaseInstrucoes();
         int limite = pcb->getLimiteInstrucoes();
 
@@ -194,6 +202,9 @@ void Bootloader::inicializarSistema(vector<Core> &cores, Disco &disco, Escalonad
 
     // Criando e configurando PCBs
     vector<PCB *> pcbs = Bootloader::createAndConfigPCBs(disco, ram, regs, escalonador, arquivosInstrucoes, globalLog);
+
+    // Exibir tabela MMU antes da execução
+    mmu.exibirTabelaMMU(globalLog);
 
     // Utiliza o LSH para organizar a fila antes da execução
     if (POLITICA_ESCALONAMENTO == PoliticasEscalonamento::SIMILARIDADE)

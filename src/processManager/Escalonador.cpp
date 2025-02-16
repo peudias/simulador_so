@@ -18,8 +18,35 @@ void Escalonador::configurarPolitica(PoliticasEscalonamento novaPolitica)
 void Escalonador::adicionarProcesso(PCB *processo, ofstream &outfile)
 {
     lock_guard<mutex> lock(mtx);
-    filaProntos.push(processo);
-    outfile << "[Escalonador] Processo " << processo->pid << " adicionado à Fila de PRONTOS" << endl;
+
+    // Criar uma fila temporária para ordenação
+    vector<PCB *> processos;
+
+    // Transferir os processos existentes para o vetor
+    while (!filaProntos.empty())
+    {
+        processos.push_back(filaProntos.front());
+        filaProntos.pop();
+    }
+
+    // Adiciona o novo processo
+    processos.push_back(processo);
+
+    // Ordenar a fila pelo endereço virtual
+    sort(processos.begin(), processos.end(),
+         [](PCB *a, PCB *b)
+         {
+             return a->getEnderecoVirtual() < b->getEnderecoVirtual();
+         });
+
+    // Transferir os processos ordenados de volta para a queue
+    for (PCB *pcb : processos)
+    {
+        filaProntos.push(pcb);
+    }
+
+    // outfile << "[Escalonador] Processo " << processo->pid << " adicionado à Fila de PRONTOS" << endl;
+    outfile << "[Escalonador] Processo " << processo->getEnderecoVirtual() << " adicionado e fila ordenada.\n";
 }
 
 PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
@@ -62,6 +89,10 @@ PCB *Escalonador::obterProximoProcesso(ofstream &outfile)
     {
         outfile << "[Escalonador] Nenhum processo válido encontrado.\n";
     }
+    else
+    {
+        outfile << "[Escalonador] Processo selecionado: " << processoSelecionado->getEnderecoVirtual() << "\n";
+    }
 
     return processoSelecionado;
 }
@@ -71,7 +102,8 @@ void Escalonador::bloquearProcesso(PCB *processo, ofstream &outfile)
     lock_guard<mutex> lock(mtx);
     processo->atualizarEstado(BLOQUEADO, outfile);
     filaBloqueados.push(processo);
-    outfile << "[Escalonador] Processo " << processo->pid << " movido para a fila de bloqueados.\n";
+    // outfile << "[Escalonador] Processo " << processo->pid << " movido para a fila de bloqueados.\n";
+    outfile << "[Escalonador] Processo " << processo->getEnderecoVirtual() << " movido para a fila de bloqueados.\n";
 }
 
 void Escalonador::desbloquearProcessos(ofstream &outfile)
@@ -83,7 +115,8 @@ void Escalonador::desbloquearProcessos(ofstream &outfile)
         filaBloqueados.pop();
         processo->atualizarEstado(PRONTO, outfile);
         filaProntos.push(processo);
-        outfile << "[Escalonador] Processo " << processo->pid << " Desbloqueado e Movido para a Fila de PRONTOS" << endl;
+        // outfile << "[Escalonador] Processo " << processo->pid << " Desbloqueado e Movido para a Fila de PRONTOS" << endl;
+        outfile << "[Escalonador] Processo " << processo->getEnderecoVirtual() << " movido para a fila de PRONTOS.\n";
     }
 }
 

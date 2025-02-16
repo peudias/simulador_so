@@ -6,6 +6,7 @@
 #include <queue>
 #include <mutex>
 #include <fstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -32,6 +33,8 @@ public:
 
     bool filaVazia() const;
     bool temProcessosProntos() const;
+
+    void ordenarFilaProntos();
 };
 
 #endif

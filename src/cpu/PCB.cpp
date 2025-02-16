@@ -7,11 +7,22 @@ PCB::PCB(int id, int quantum, const Registers &regs, int enderecoBase, int limit
       registradores(regs), enderecoBaseInstrucoes(enderecoBase), enderecoLimiteInstrucoes(limite),
       tempoEstimado(tempoEstimado), prioridade(prioridade) {}
 
+void PCB::setEnderecoVirtual(const string &endereco)
+{
+    this->enderecoVirtual = endereco;
+}
+
+string PCB::getEnderecoVirtual() const
+{
+    return enderecoVirtual;
+}
+
 void PCB::atualizarEstado(EstadoProcesso novoEstado, ofstream &outfile)
 {
     estado = novoEstado;
     outfile
-        << "\n[PCB] Processo " << pid << " alterado para estado: "
+        // << "\n[PCB] Processo " << pid << " alterado para estado: "
+        << "\n[PCB] Processo " << enderecoVirtual << " alterado para estado: "
         << (novoEstado == PRONTO ? "PRONTO" : novoEstado == EXECUCAO ? "EXECUCAO"
                                           : novoEstado == BLOQUEADO  ? "BLOQUEADO"
                                                                      : "FINALIZADO")
@@ -139,7 +150,8 @@ bool PCB::verificarRecurso(const std::string &nomeRecurso) const
 void PCB::exibirPCB(ofstream &outfile) const
 {
     outfile << "\n=============== [PCB] ==================================================================================================\n"
-            << "[PCB] Processo ID: " << pid << "\n"
+            // << "[PCB] Processo ID: " << pid << "\n"
+            << "[PCB] Processo Endereço Virtual: " << enderecoVirtual << "\n"
             << "Estado: " << (estado == PRONTO ? "PRONTO" : estado == EXECUCAO ? "EXECUCAO"
                                                         : estado == BLOQUEADO  ? "BLOQUEADO"
                                                                                : "FINALIZADO")

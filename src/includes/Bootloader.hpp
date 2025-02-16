@@ -9,6 +9,7 @@
 #include "Registers.hpp"
 #include "ProcessManager.hpp"
 #include "Cache.hpp"
+#include "MMU.hpp"
 
 #include <vector>
 #include <iostream>
@@ -32,6 +33,7 @@ public:
     static PoliticasEscalonamento POLITICA_ESCALONAMENTO;
     static int CACHE_CAPACIDADE;
     static Cache *cache;
+    static MMU mmu;
 
     static void loadConfigBootloader(const string &file);
     static void garantirDiretorioSaidaExiste(const string &path);
