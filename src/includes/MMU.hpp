@@ -1,18 +1,24 @@
 #ifndef MMU_HPP
 #define MMU_HPP
 
-#include <vector>
 #include <unordered_map>
-#include <iostream>
+#include <string>
+#include <bitset>
 #include <fstream>
 
 using namespace std;
 
 class MMU
 {
+private:
+    unordered_map<string, int> tabelaMMU; // Mapeia endereços virtuais (binário) para físicos (inteiros)
+
 public:
-    static int traduzirEndereco(int enderecoLogico);
-    static int obterIndiceTabela(const std::vector<int> &tabelaBinaria);
+    MMU();
+
+    string gerarEnderecoVirtual(int id);
+    int mapearParaFisico(const string &enderecoVirtual);
+    void exibirTabelaMMU(ofstream &outfile);
 };
 
-#endif
+#endif // MMU_HPP
